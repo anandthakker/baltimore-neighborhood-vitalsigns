@@ -1,6 +1,8 @@
 
 
 angular.module 'vitalsigns', []
+  .run ($rootScope) ->
+    $rootScope._ = _
 
   .factory 'vsData', ($q)->
 
@@ -94,7 +96,8 @@ angular.module 'vitalsigns', []
 
     path = d3.geo.path().projection(projection)
 
-    choropleth = (element, vsProp)->
+    choropleth = (svg, vsProp)->
+      svg = d3.select(svg)
       vsData.then (dataset)->
         mapdata = dataset.topojson
         vitalsigns = dataset.vitalsigns
@@ -112,8 +115,7 @@ angular.module 'vitalsigns', []
           .domain(domain)
           .range(d3.range(9).map( (i) -> ("q" + i + "-9") ) )
 
-        svg = d3.select(element).append("svg")
-          .attr("width", width)
+        svg.attr("width", width)
           .attr("height", height)
           .attr("data-property", vsProp)
           .attr("data-min", domain[0])
@@ -143,20 +145,14 @@ angular.module 'vitalsigns', []
 
 
   .directive 'vsMap', (vsData, choropleth)->
-    template: """
-      <div class="vs-map">
-        <h2>{{variable}}</h2>
-        <span class="year">{{year}}</span>
-      </div>
-    """
+    templateUrl: "partials/vs-map.tpl.html"
     restrict: 'E'
     replace: true
     link: (scope, element, attr)->
       attr.$observe 'property', (prop)->
         vsData.then (dataset) ->
-          choropleth(element[0], prop)
-          scope.variable = dataset.varInfo.get(prop)["Indicator"]
-          scope.year = dataset.varInfo.get(prop)["Year"]
+          choropleth(element.children("svg")[0], prop)
+          scope.varInfo = dataset.varInfo.get(prop)
 
 
   .controller 'main', ($scope, vsData)->

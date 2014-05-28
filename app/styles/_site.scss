@@ -1,0 +1,83 @@
+/*-----------------------------------
+ Site Styles
+-----------------------------------*/
+
+html {
+  font-size: $font-size;
+}
+
+body, select, input, textarea {
+  color: $font-color;
+  // Set your base font here, to apply evenly
+  font-family: $font-family-sans;
+  line-height: $line-height;
+}
+
+body {
+  @extend %uncollapse-margin;
+}
+
+a {
+  color: $link-color;
+  text-decoration: none;
+  &:hover {
+    color: $link-color-hover;
+    text-decoration: underline;
+  }
+}
+
+ul {
+  list-style-type: none;
+  padding: 0px;
+  margin: lines(1) 0;
+}
+
+
+button {
+  border: 0;
+  background: none;
+  outline: 0;
+  cursor: pointer;
+}
+
+
+
+h1,h2, h3 {
+  font-family: $font-family-serif;
+  font-weight: normal;
+}
+h4,h5,h6 {
+  font-family: $font-family-sans;
+  font-weight: bold;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Set up typographic scale. */
+
+p, h1, h2, h3, h4 { margin-top:0; margin-bottom:0; }
+
+h1 { @include scale-type(scale-to(2), 2, 2); }
+h2 { @include scale-type(scale-to(2), 1, 0); }
+h3 { @include scale-type(scale-to(1), 1, 0, 1); }
+h4 { @include scale-type(scale-to(0), 1, 0); }
+p  { @include scale-type(scale-to(0), 1, 0); }
+
+h4+p { margin-top: 0; }
+
+small { font-size: scale-to(-1); }
+
+@media only screen and (min-width: 480px) {
+  h1 { @include scale-type(scale-to(3), 2, 2); }
+}
+
+
+
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
