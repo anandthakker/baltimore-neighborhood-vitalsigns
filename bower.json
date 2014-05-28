@@ -6,7 +6,6 @@
     "jquery": "~1.11.0",
     "d3": "~3.4.8",
     "topojson": "~1.6.13",
-    "queue-async": "https://github.com/mbostock/queue.git#~1.0.7",
     "angular": "~1.2.16"
   },
   "devDependencies": {}
