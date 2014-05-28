@@ -4,7 +4,8 @@ vsProps = d3.map()
 
 ###
 * d3 Map Drawing
-* (See http://bost.ocks.org/mike/map/)
+* (See http://bost.ocks.org/mike/map/ and
+* http://bl.ocks.org/mbostock/4060606 )
 ###
 
 width = 200;
@@ -19,7 +20,7 @@ path = d3.geo.path().projection(projection)
 
 chloropleth = (mapdata, feature, vsProp)->
 
-  svg = d3.select("body").append("svg")
+  svg = d3.select(".maps").append("svg")
     .attr("width", width)
     .attr("height", height)
 
