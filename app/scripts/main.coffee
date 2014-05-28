@@ -2,7 +2,7 @@
 
 angular.module 'vitalsigns', []
 
-  .factory 'vsData', ($q, $timeout)->
+  .factory 'vsData', ($q)->
 
     deferred = $q.defer()
 
@@ -64,22 +64,14 @@ angular.module 'vitalsigns', []
       for prop, val of rows[0]
         vsData.variables.push prop unless prop is "CSA2010"
 
-    $timeout ()->
-      d3.csv "data/VS Arts 2011-2012 - VS Arts 2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Census 2010-2012 - VS Census 2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Crime 2010-2012 - VS Crime 2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Education 2010-2012 - VS Education 2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Health 2010-2012 - VS_Health_2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Housing 2010-2012 - VS Housing 2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Sustainability 2010-2012 - VS Sustainability 2010-2012.csv", read_csv, done
-    $timeout ()->
-      d3.csv "data/VS Workforce 2010-2012 - VS Workforce 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Arts 2011-2012 - VS Arts 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Census 2010-2012 - VS Census 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Crime 2010-2012 - VS Crime 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Education 2010-2012 - VS Education 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Health 2010-2012 - VS_Health_2010-2012.csv", read_csv, done
+    d3.csv "data/VS Housing 2010-2012 - VS Housing 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Sustainability 2010-2012 - VS Sustainability 2010-2012.csv", read_csv, done
+    d3.csv "data/VS Workforce 2010-2012 - VS Workforce 2010-2012.csv", read_csv, done
 
     deferred.promise
 
