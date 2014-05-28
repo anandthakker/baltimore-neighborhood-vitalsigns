@@ -2,7 +2,7 @@
 
 angular.module 'vitalsigns', []
 
-  .factory 'vsData', ($q)->
+  .factory 'vsData', ($q, $timeout)->
 
     deferred = $q.defer()
 
@@ -44,7 +44,7 @@ angular.module 'vitalsigns', []
             pad = (a,b) -> (1e15+a+"").slice(-b)
             for year in yrs
               yr = pad(year - 2000, 2)
-              vsData.varInfo.set(varname + yr, angular.extend({year: year},v))
+              vsData.varInfo.set(varname + yr, angular.extend({Year: year},v))
 
 
           deferred.resolve(vsData)
@@ -64,14 +64,22 @@ angular.module 'vitalsigns', []
       for prop, val of rows[0]
         vsData.variables.push prop unless prop is "CSA2010"
 
-    d3.csv "data/VS Arts 2011-2012 - VS Arts 2010-2012.csv", read_csv, done
-    d3.csv "data/VS Census 2010-2012 - VS Census 2010-2012.csv", read_csv, done
-    d3.csv "data/VS Crime 2010-2012 - VS Crime 2010-2012.csv", read_csv, done
-    d3.csv "data/VS Education 2010-2012 - VS Education 2010-2012.csv", read_csv, done
-    d3.csv "data/VS Health 2010-2012 - VS_Health_2010-2012.csv", read_csv, done
-    d3.csv "data/VS Housing 2010-2012 - VS Housing 2010-2012.csv", read_csv, done
-    d3.csv "data/VS Sustainability 2010-2012 - VS Sustainability 2010-2012.csv", read_csv, done
-    d3.csv "data/VS Workforce 2010-2012 - VS Workforce 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Arts 2011-2012 - VS Arts 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Census 2010-2012 - VS Census 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Crime 2010-2012 - VS Crime 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Education 2010-2012 - VS Education 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Health 2010-2012 - VS_Health_2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Housing 2010-2012 - VS Housing 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Sustainability 2010-2012 - VS Sustainability 2010-2012.csv", read_csv, done
+    $timeout ()->
+      d3.csv "data/VS Workforce 2010-2012 - VS Workforce 2010-2012.csv", read_csv, done
 
     deferred.promise
 
@@ -146,6 +154,7 @@ angular.module 'vitalsigns', []
     template: """
       <div class="vs-map">
         <h2>{{variable}}</h2>
+        <span class="year">{{year}}</span>
       </div>
     """
     restrict: 'E'
@@ -155,7 +164,7 @@ angular.module 'vitalsigns', []
         vsData.then (dataset) ->
           choropleth(element[0], prop)
           scope.variable = dataset.varInfo.get(prop)["Indicator"]
-          scope.year - dataset.varInfo.get(prop)["Year"]
+          scope.year = dataset.varInfo.get(prop)["Year"]
 
 
   .controller 'main', ($scope, vsData)->
