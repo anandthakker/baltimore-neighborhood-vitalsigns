@@ -24,7 +24,7 @@
           <h1>Baltimore Neighborhood Vital Signs</h1>
 
           <!-- From https://github.com/simonwhitaker/github-fork-ribbon-css -->
-          <div class="github-fork-ribbon-wrapper right">
+          <div class="github-fork-ribbon-wrapper right-bottom">
               <div class="github-fork-ribbon">
                   <a href="https://github.com/anandthakker/baltimore-neighborhood-vitalsigns">Fork me on GitHub</a>
               </div>
@@ -34,7 +34,7 @@
         <div class="container">
           <section class="controls" ng-class="{hidden: !controlsActive}">
             <button class="hide-btn" ng-click="controlsActive = !controlsActive;" ng-init="controlsActive=true;">
-              {{ controlsActive ? "X" : "« choose maps"}}
+              {{ controlsActive ? "X" : "« Indicators "}}
             </button>
             <ul>
               <li ng-repeat="(section, variables) in indicators">
@@ -50,6 +50,9 @@
           </section>
 
           <section class="maps">
+            <div class="welcome" ng-show="selection.selectedValues.length == 0">
+              <h3>Choose some indicators to see maps. &rarr;</h3>
+            </div>
             <vs-map ng-repeat="var in selection.selectedValues" property="{{var['Variable Name']}}">
           </section>
         </div>

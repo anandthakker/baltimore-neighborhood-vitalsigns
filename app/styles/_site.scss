@@ -58,7 +58,7 @@ img {
 
 p, h1, h2, h3, h4 { margin-top:0; margin-bottom:0; }
 
-h1, h2 {
+h1, h2, h3 {
   line-height: 1.2;
   margin: lines(1) 0;
 }
@@ -70,7 +70,7 @@ h4+p { margin-top: 0; }
 
 small { font-size: scale-to(-1); }
 
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 35em) {
   h1 { font-size: scale-to(3);  }
 }
 
@@ -105,7 +105,7 @@ nav {
   background-position: 0 1.25em;
   background-origin: content-box;
 
-  padding: 0 .5em lines(1) .5em;
+  padding: 0 .5em 0 .5em;
 
   @extend %uncollapse-margin;
 }
@@ -127,8 +127,10 @@ footer.container {
   }
 }
 
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 769px) {
   footer.container {
+    position: fixed;
+    bottom: 0;
     .copy {
       float: left;
       p, nav, ul {
@@ -144,16 +146,23 @@ footer.container {
 
 /*----------------------------------------------------------------------*/
 
+.welcome, h3, header h1 {
+  margin: .25em;
+}
+
+$controls-bg: rgba(200,200,200,.9);
 
 .controls {
   font-size: scale-to(-1);
-  background: rgba(200,200,200,.9);
+  background:  $controls-bg;
   padding: 0 2em;
 
+  width: 100%;
 
+  $offset: 9rem;
   /* layout */
   position: fixed;
-  top: 0;
+  top: $offset;
   bottom: 0;
   left: 0;
   overflow-y: scroll;
@@ -161,14 +170,17 @@ footer.container {
 
   /* collapse */
   transition: left .5s;
-  &.hidden {
-    left: (100%);
-  }
   .hide-btn {
     position: fixed;
     right: 0;
-    top: 0rem;
+    top: $offset;
     font-size: scale-to(1);
+  }
+  &.hidden {
+    left: (100%);
+    .hide-btn {
+      background: $controls-bg;
+    }
   }
 
   /* selection */
@@ -184,7 +196,16 @@ footer.container {
 
 }
 
-@media only screen and (min-width: 480px) {
+.maps {
+  min-height: 300px;
+}
+
+
+@media only screen and (min-width: 769px) {
+
+  .welcome, h3, header h1 {
+    margin-bottom: lines(1);
+  }
   .controls {
     left: inherit;
     top: 0;
