@@ -45,7 +45,9 @@ angular.module 'vitalsigns', []
             pad = (a,b) -> (1e15+a+"").slice(-b)
             for year in yrs
               yr = pad(year - 2000, 2)
-              vsData.varInfo.set(varname + yr, angular.extend({Year: year},v))
+              newV = angular.extend({Year: year},v)
+              newV['Variable Name'] = varname + yr
+              vsData.varInfo.set(varname + yr, newV)
 
 
           deferred.resolve(vsData)
@@ -154,6 +156,48 @@ angular.module 'vitalsigns', []
           scope.varInfo = dataset.varInfo.get(prop)
 
 
-  .controller 'main', ($scope, vsData)->
+  .factory 'Selection', ()->
+    class Selection
+      constructor: ()->
+
+      selectedValues: []
+
+      add: (v) =>
+        if !@isSelected(v) then @selectedValues.push(v)
+
+      remove: (v) =>
+        console.log "Removing v"
+        i = _.indexOf(@selectedValues, v)
+        if i >= 0 then @selectedValues.splice(i,1)
+
+      toggle: (v) =>
+        if @isSelected(v)
+          @remove(v)
+        else
+          @add(v)
+
+      isSelected: (v)=>
+        _.contains(@selectedValues, v)
+
+      select: (vals) =>
+        if _.isArray(vals)
+          if _.some(vals, (v)=>!@isSelected(v))
+            _.map vals, @add
+          else
+            _.map vals, @remove
+          return
+        else
+          @toggle(vals)
+
+
+  .controller 'main', ($scope, vsData, Selection)->
+
     vsData.then (dataset)->
       $scope.vars = dataset.variables
+
+      liveVars = _.filter(dataset.varInfo.values(), (varInfo)->
+        _.contains dataset.variables, varInfo["Variable Name"]
+      )
+      $scope.indicators = _.groupBy liveVars, 'Section'
+
+      $scope.selection = new Selection()

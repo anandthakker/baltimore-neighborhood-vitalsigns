@@ -34,10 +34,21 @@
 
         <div class="container">
           <section class="controls">
+            <ul>
+              <li ng-repeat="(section, variables) in indicators">
+                <div ng-click="selection.select(variables)">{{section}}</div>
+                <ul>
+                  <li ng-repeat="v in variables" ng-click="selection.select(v)"
+                      ng-class="{selected: selection.isSelected(v)}">
+                    {{v.Indicator}} - {{v.Year}}
+                  </li>
+                </ul>
+              </li>
+            </ul>
           </section>
 
           <section class="maps">
-            <vs-map ng-repeat="var in vars" property="{{var}}">
+            <vs-map ng-repeat="var in selection.selectedValues" property="{{var['Variable Name']}}">
           </section>
         </div>
 
