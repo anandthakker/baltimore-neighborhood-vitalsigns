@@ -1,5 +1,4 @@
 
-
 angular.module 'vitalsigns', []
   .run ($rootScope) ->
     $rootScope._ = _

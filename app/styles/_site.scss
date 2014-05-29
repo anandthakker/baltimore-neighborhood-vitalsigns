@@ -8,7 +8,6 @@ html {
 
 body, select, input, textarea {
   color: $font-color;
-  // Set your base font here, to apply evenly
   font-family: $font-family-sans;
   line-height: $line-height;
 }
@@ -73,11 +72,58 @@ small { font-size: scale-to(-1); }
   h1 { @include scale-type(scale-to(3), 2, 2); }
 }
 
-
-
 .browsehappy {
     margin: 0.2em 0;
     background: #ccc;
     color: #000;
     padding: 0.2em 0;
+}
+
+
+/*----------------------------------------------------------------------*/
+
+
+nav {
+  display: inline-block;
+  li {
+    display: inline-block;
+    &:first-child:before {
+      display: none;
+    }
+    &:before {
+      content: "/";
+      padding: 0 .25em;
+    }
+  }
+  .active {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}
+
+.container {
+  background-position: 0 1.25em;
+  background-origin: content-box;
+
+  padding: 0 1.5em lines(1) 1.5em;
+
+  @extend %uncollapse-margin;
+}
+
+
+footer.container {
+  background: white;
+  padding: 0 0 2em 0;
+  @extend %clearfix;
+
+  .copy {
+    margin-top: lines(1);
+    float: left;
+    p, nav, ul {
+      display: inline;
+    }
+  }
+  nav {
+    margin: 0 2em;
+  }
 }

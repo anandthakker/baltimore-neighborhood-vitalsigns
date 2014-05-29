@@ -32,17 +32,30 @@
 
         </header>
 
-        <section class="controls">
+        <div class="container">
+          <section class="controls">
+          </section>
 
-        </section>
+          <section class="maps">
+            <vs-map ng-repeat="var in vars" property="{{var}}">
+          </section>
+        </div>
 
-
-
-        <section class="maps">
-          <vs-map ng-repeat="var in vars" property="{{var}}">
-        </section>
-
-        <footer>
+        <footer class="container">
+          <section class=".copy">
+            <span>&copy; 2014 Anand Thakker</span>
+            <nav>
+              <ul>
+                <li> <a href="http://anandthakker.net/about">about</a></li>
+                <li> <a href="https://twitter.com/anandthakker">twitter</a></li>
+                <li> <a href="https://github.com/anandthakker">github</a></li>
+              </ul>
+            </nav>
+            <span>
+              (Data from <a href="http://bniajfi.org/">
+                <abbr title="Baltimore Neighborhood Indicators Alliance">BNIA</abbr></a>.)
+            </span>
+          </section>
         </footer>
 
 
