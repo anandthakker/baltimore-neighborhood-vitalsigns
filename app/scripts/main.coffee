@@ -156,7 +156,4 @@ angular.module 'vitalsigns', []
 
   .controller 'main', ($scope, vsData)->
     vsData.then (dataset)->
-
-      setTimeout ()-> $scope.$apply ()->
-        $scope.vars = dataset.variables
-      , 5000
+      $scope.vars = dataset.variables
