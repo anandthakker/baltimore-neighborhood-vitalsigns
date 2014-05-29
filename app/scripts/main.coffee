@@ -166,7 +166,6 @@ angular.module 'vitalsigns', []
         if !@isSelected(v) then @selectedValues.push(v)
 
       remove: (v) =>
-        console.log "Removing v"
         i = _.indexOf(@selectedValues, v)
         if i >= 0 then @selectedValues.splice(i,1)
 
