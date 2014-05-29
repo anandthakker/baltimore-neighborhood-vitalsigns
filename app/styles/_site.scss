@@ -196,10 +196,6 @@ $controls-bg: rgba(200,200,200,.9);
 
 }
 
-.maps {
-  min-height: 300px;
-}
-
 
 @media only screen and (min-width: 769px) {
 
@@ -217,9 +213,8 @@ $controls-bg: rgba(200,200,200,.9);
     }
   }
 
-  .maps {
+  .maps, .disqus {
     width: 63%;
     margin-right: 3%;
-    min-height: 480px;
   }
 }
