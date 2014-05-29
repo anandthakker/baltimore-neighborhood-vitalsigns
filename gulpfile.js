@@ -71,7 +71,7 @@ gulp.task('fonts', function () {
 });
 
 gulp.task('extras', function () {
-    return gulp.src(['app/*.*', '!app/*.html'], { dot: true })
+    return gulp.src(['app/*.*', 'app/{data,partials}/**/*.*' , '!app/*.html'], { dot: true })
         .pipe(gulp.dest('dist'));
 });
 
