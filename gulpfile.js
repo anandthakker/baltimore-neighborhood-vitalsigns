@@ -3,6 +3,8 @@
 
 var gulp = require('gulp');
 
+var ngmin = require('gulp-ngmin');
+
 // load plugins
 var $ = require('gulp-load-plugins')();
 
@@ -37,6 +39,7 @@ gulp.task('html', ['styles', 'scripts'], function () {
     return gulp.src('app/*.html')
         .pipe($.useref.assets({searchPath: '{.tmp,app}'}))
         .pipe(jsFilter)
+        .pipe(ngmin())
         .pipe($.uglify())
         .pipe(jsFilter.restore())
         .pipe(cssFilter)
