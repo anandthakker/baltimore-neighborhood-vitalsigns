@@ -58,10 +58,12 @@ img {
 
 p, h1, h2, h3, h4 { margin-top:0; margin-bottom:0; }
 
-h1 { @include scale-type(scale-to(2), 2, 2); }
-h2 { @include scale-type(scale-to(2), 1, 0); }
-h3 { @include scale-type(scale-to(1), 1, 0, 1); }
-h4 { @include scale-type(scale-to(0), 1, 0); }
+h1, h2 {
+  line-height: 1.2;
+  margin: lines(1) 0;
+}
+h1 { font-size: scale-to(2); }
+h2 { font-size: scale-to(2); }
 p  { @include scale-type(scale-to(0), 1, 0); }
 
 h4+p { margin-top: 0; }
@@ -69,7 +71,7 @@ h4+p { margin-top: 0; }
 small { font-size: scale-to(-1); }
 
 @media only screen and (min-width: 480px) {
-  h1 { @include scale-type(scale-to(3), 2, 2); }
+  h1 { font-size: scale-to(3);  }
 }
 
 .browsehappy {
@@ -83,7 +85,6 @@ small { font-size: scale-to(-1); }
 /*----------------------------------------------------------------------*/
 
 nav {
-  display: inline-block;
   li {
     display: inline-block;
     &:first-child:before {
@@ -104,10 +105,11 @@ nav {
   background-position: 0 1.25em;
   background-origin: content-box;
 
-  padding: 0 1.5em lines(1) 1.5em;
+  padding: 0 .5em lines(1) .5em;
 
   @extend %uncollapse-margin;
 }
+
 
 
 footer.container {
@@ -118,13 +120,24 @@ footer.container {
 
   .copy {
     margin-top: lines(1);
-    float: left;
     p, nav, ul {
-      display: inline;
+      margin-top: 0;
+      margin-bottom: 0;
     }
   }
-  nav {
-    margin: 0 2em;
+}
+
+@media only screen and (min-width: 480px) {
+  footer.container {
+    .copy {
+      float: left;
+      p, nav, ul {
+        display: inline;
+      }
+      nav {
+        margin: 0 2em;
+      }
+    }
   }
 }
 
@@ -134,22 +147,58 @@ footer.container {
 
 .controls {
   font-size: scale-to(-1);
+  background: rgba(200,200,200,.9);
+  padding: 0 2em;
 
 
-  float: left;
-  width: 33%;
+  /* layout */
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
 
+  /* collapse */
+  transition: left .5s;
+  &.hidden {
+    left: (100%);
+  }
+  .hide-btn {
+    position: fixed;
+    right: 0;
+    top: 0rem;
+    font-size: scale-to(1);
+  }
 
+  /* selection */
   li {
     cursor: pointer;
-    &.selected {
+    h2:hover+ul, li:hover {
+      background-color: #ddd;
+    }
+    &.selected, li.selected:hover {
       background-color: $selection-color;
     }
   }
+
 }
 
-.maps {
-  float: left;
-  width: 63%;
-  margin-left: 3%;
+@media only screen and (min-width: 480px) {
+  .controls {
+    left: inherit;
+    top: 0;
+    right: 0;
+    width: 33%;
+
+    .hide-btn {
+      display: none;
+    }
+  }
+
+  .maps {
+    width: 63%;
+    margin-right: 3%;
+    min-height: 480px;
+  }
 }
