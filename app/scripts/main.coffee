@@ -79,7 +79,7 @@ angular.module 'vitalsigns', []
     deferred.promise
 
 
-  .factory 'choropleth', (vsData)->
+  .factory 'Choropleth', (vsData)->
 
     ###
     * d3 Map Drawing
@@ -87,73 +87,87 @@ angular.module 'vitalsigns', []
     * http://bl.ocks.org/mbostock/4060606 )
     ###
 
-    width = 200;
-    height = 200;
+    class Choropleth
+      constructor: (svg, @feature, @indicator) ->
+        @svg = d3.select(svg)
+        @projection = d3.geo.mercator()
+          .scale(50000)
+          .center([-76.6167, 39.2833])
+          .translate([@width/2, @height/2])
+        @path = d3.geo.path().projection(@projection)
 
-    projection = d3.geo.mercator()
-    projection.scale(50000)
-    projection.center([-76.6167, 39.2833])
-    projection.translate([width/2, height/2])
+      width: 200
+      height: 200
 
-    path = d3.geo.path().projection(projection)
+      # parse numerical data from strings
+      # Todo: handle dollar signs, commas, etc.
+      parseValue: (val)->
+        parseFloat(val)
 
-    choropleth = (svg, vsProp)->
-      svg = d3.select(svg)
-      vsData.then (dataset)->
-        mapdata = dataset.topojson
-        vitalsigns = dataset.vitalsigns
-        # Todo: get this hardcoded property name out of here.
-        feature = mapdata.objects["CSA_NSA_Tracts"]
+      # property value accessor
+      value: (d) =>
+        @parseValue(@vitalsigns.get(d.id)?.get(@indicator))
 
-        val = (d)->
-          parseFloat(d.get(vsProp))
-        domain = [
-          d3.min vitalsigns.values(), val
-          d3.max vitalsigns.values(), val
-        ]
+      # method to compute the domain for our color scale
+      domain: () =>
+        d3.extent @vitalsigns.values(), (d)=>@parseValue(d.get(@indicator))
 
+      # method to compute the range for our color scale
+      range: () =>
+        d3.range(9).map (i) -> "q#{i}-9"
+
+      data: (mapdata, vitalsigns) =>
+        @mapdata = mapdata
+        @vitalsigns = vitalsigns
+        @redraw()
+
+      redraw: () =>
+        feature = @mapdata.objects[@feature]
+
+        ###
+        Rebuild quantizer each time, since domain and range could have changed
+        (in typical d3 style, we'd just have the quantize function be accessible
+        to client code, but since we want our default domain to be set when the
+        data is provided, it works better to expose domain() as a method that
+        can be overridden, and just build quantize from that... I think...)
+        ###
         quantize = d3.scale.quantize()
-          .domain(domain)
-          .range(d3.range(9).map( (i) -> ("q" + i + "-9") ) )
+          .domain(@domain())
+          .range(@range())
 
-        svg.attr("width", width)
-          .attr("height", height)
-          .attr("data-property", vsProp)
-          .attr("data-min", domain[0])
-          .attr("data-max", domain[1])
+        @svg.attr("width", @width)
+          .attr("height", @height)
 
-        val = (d)->
-          parseFloat(vitalsigns.get(d.id)?.get(vsProp)) ? 0
-
-        svg.selectAll(".community")
-          .data(topojson.feature(mapdata, feature).features)
+        @svg.selectAll(".community")
+          .data(topojson.feature(@mapdata, feature).features)
           .enter()
           .append("path")
+          .attr("d", @path)
           .attr("data-community", (d)->d.id)
-          .attr("data-property", val)
-          .attr("class", (d)->
-            quantize(val(d))
+          .attr("class", (d)=>
+            quantize(@value(d))
           )
-          .attr("d", path)
 
-        svg.append("path")
-          .datum(topojson.mesh(mapdata, feature))
-          .attr("d", path)
+        @svg.append("path")
+          .datum(topojson.mesh(@mapdata, feature))
+          .attr("d", @path)
           .attr("class", "community-boundary");
 
-      , (reason) ->
-        console.error(reason)
 
-
-  .directive 'vsMap', (vsData, choropleth)->
+  .directive 'vsMap', (vsData, Choropleth)->
     templateUrl: "partials/vs-map.tpl.html"
     restrict: 'E'
     replace: true
+
     link: (scope, element, attr)->
+
       attr.$observe 'property', (prop)->
+        svgNode = element.children("svg")[0]
+        vsMap = new Choropleth(svgNode, "CSA_NSA_Tracts", prop)
+
         vsData.then (dataset) ->
-          choropleth(element.children("svg")[0], prop)
           scope.varInfo = dataset.varInfo.get(prop)
+          vsMap.data(dataset.topojson, dataset.vitalsigns)
 
 
   .factory 'Selection', ()->
