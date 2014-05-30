@@ -31,11 +31,11 @@
           </div>
         </header>
 
+        <button class="hide-btn" ng-click="controlsActive = !controlsActive;" ng-init="controlsActive=true;">
+          {{ controlsActive ? "X" : "« Indicators "}}
+        </button>
         <div class="container">
           <section class="controls" ng-class="{hidden: !controlsActive}">
-            <button class="hide-btn" ng-click="controlsActive = !controlsActive;" ng-init="controlsActive=true;">
-              {{ controlsActive ? "X" : "« Indicators "}}
-            </button>
             <ul>
               <li ng-repeat="(section, variables) in indicators">
                 <h2 ng-click="selection.select(variables)">{{section}}</h2>
