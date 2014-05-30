@@ -88,7 +88,7 @@ angular.module 'vitalsigns', []
     ###
 
     class Choropleth
-      constructor: (svg, @feature, @indicator) ->
+      constructor: (svg, @feature, @regionProperty) ->
         @svg = d3.select(svg)
         @projection = d3.geo.mercator()
           .scale(50000)
@@ -104,25 +104,28 @@ angular.module 'vitalsigns', []
       parseValue: (val)->
         parseFloat(val)
 
-      # property value accessor
+      ###
+      Property value accessor.  Uses the "id" property of each topojson
+      object to look up the region's data value.
+      ###
       value: (d) =>
-        @parseValue(@vitalsigns.get(d.id)?.get(@indicator))
+        @parseValue(@regionData.get(d.id)?.get(@regionProperty))
 
       # method to compute the domain for our color scale
       domain: () =>
-        d3.extent @vitalsigns.values(), (d)=>@parseValue(d.get(@indicator))
+        d3.extent @regionData.values(), (d)=>@parseValue(d.get(@regionProperty))
 
       # method to compute the range for our color scale
       range: () =>
         d3.range(9).map (i) -> "q#{i}-9"
 
-      data: (mapdata, vitalsigns) =>
-        @mapdata = mapdata
-        @vitalsigns = vitalsigns
+      data: (mapdata, regiondata) =>
+        @topojsonData = mapdata
+        @regionData = regiondata
         @redraw()
 
       redraw: () =>
-        feature = @mapdata.objects[@feature]
+        feature = @topojsonData.objects[@feature]
 
         ###
         Rebuild quantizer each time, since domain and range could have changed
@@ -138,20 +141,20 @@ angular.module 'vitalsigns', []
         @svg.attr("width", @width)
           .attr("height", @height)
 
-        @svg.selectAll(".community")
-          .data(topojson.feature(@mapdata, feature).features)
+        @svg.selectAll(".region")
+          .data(topojson.feature(@topojsonData, feature).features)
           .enter()
           .append("path")
           .attr("d", @path)
-          .attr("data-community", (d)->d.id)
+          .attr("data-region", (d)->d.id)
           .attr("class", (d)=>
             quantize(@value(d))
           )
 
         @svg.append("path")
-          .datum(topojson.mesh(@mapdata, feature))
+          .datum(topojson.mesh(@topojsonData, feature))
           .attr("d", @path)
-          .attr("class", "community-boundary");
+          .attr("class", "region-boundary");
 
 
   .directive 'vsMap', (vsData, Choropleth)->
