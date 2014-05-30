@@ -152,6 +152,21 @@ footer.container {
 
 $controls-bg: rgba(200,200,200,.9);
 
+.maps {
+  min-height: 10em;
+}
+
+$offset: 9rem;
+
+.hide-btn {
+  position: fixed;
+  right: 0;
+  top: $offset;
+  font-size: scale-to(1);
+  z-index: 100;
+  background-color: $controls-bg;
+}
+
 .controls {
   font-size: scale-to(-1);
   background:  $controls-bg;
@@ -159,7 +174,6 @@ $controls-bg: rgba(200,200,200,.9);
 
   width: 100%;
 
-  $offset: 9rem;
   /* layout */
   position: fixed;
   top: $offset;
@@ -170,17 +184,8 @@ $controls-bg: rgba(200,200,200,.9);
 
   /* collapse */
   transition: left .5s;
-  .hide-btn {
-    position: fixed;
-    right: 0;
-    top: $offset;
-    font-size: scale-to(1);
-  }
   &.hidden {
     left: (100%);
-    .hide-btn {
-      background: $controls-bg;
-    }
   }
 
   /* selection */
