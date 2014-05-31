@@ -20,6 +20,7 @@ angular.module 'vitalsigns', ['ui.router']
             # templateUrl: "partials/comments.tpl.html"
             template: ""
 
+    $urlRouterProvider.otherwise "/i//"
 
 
   .run ($rootScope) ->

@@ -8,7 +8,6 @@
     "topojson": "~1.6.13",
     "angular": "~1.2.16",
     "lodash": "~2.4.1",
-    "github-fork-ribbon-css": "~0.1.0",
     "angular-ui-router": "~0.2.10"
   },
   "devDependencies": {}
