@@ -2,6 +2,14 @@
  Site Styles
 -----------------------------------*/
 
+@import url(http://weloveiconfonts.com/api/?family=entypo);
+
+/* entypo */
+[class*="entypo-"]:before {
+  font-family: 'entypo', sans-serif;
+}
+
+
 html {
   font-size: $font-size;
 }
@@ -42,8 +50,8 @@ button {
 
 
 h1,h2, h3 {
-  font-family: $font-family-serif;
-  font-weight: normal;
+  font-family: $font-family-sans;
+  font-weight: bold;
 }
 h4,h5,h6 {
   font-family: $font-family-sans;
@@ -63,7 +71,7 @@ h1, h2, h3 {
   margin: lines(1) 0;
 }
 h1 { font-size: scale-to(2); }
-h2 { font-size: scale-to(2); }
+h2 { font-size: scale-to(1); }
 p  { @include scale-type(scale-to(0), 1, 0); }
 
 h4+p { margin-top: 0; }
@@ -150,13 +158,13 @@ footer.container {
   margin: .25em;
 }
 
-$controls-bg: rgba(200,200,200,.9);
+$controls-bg: rgba(200,200,200,.2);
 
 .maps {
   min-height: 10em;
 }
 
-$offset: 9rem;
+$offset: 0rem;
 
 .hide-btn {
   position: fixed;
@@ -171,28 +179,31 @@ $offset: 9rem;
   font-size: scale-to(-1);
   background:  $controls-bg;
   padding: 0 2em;
-
   width: 100%;
-
-
-  $offset: 1rem;
-  /* layout */
   position: fixed;
   top: $offset;
   bottom: 0;
   left: 0;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-
-  /* collapse */
   transition: left .5s;
+  -webkit-transition: left .5s;
   &.hidden {
-    left: (100%);
+    left: 100%;
+  }
+  ul li ul li{
+    padding-bottom:1px;
+    padding-top: 1px;
   }
 
   /* selection */
   li {
     cursor: pointer;
+    h2{
+      border-bottom: 1px solid #ccc;
+      color: #444;
+      padding-bottom: 4px;
+    }
     h2:hover+ul, li:hover {
       background-color: #ddd;
     }
@@ -209,14 +220,14 @@ $offset: 9rem;
   .welcome, h3, header h1 {
     margin-bottom: lines(1);
   }
-  .controls {
+  .controls{
     left: inherit;
     top: 0;
     right: 0;
     width: 33%;
-
-    .hide-btn {
-      //display: none;
+    transition: all .5s;
+    &.hidden {
+      left: 100%;
     }
   }
 
