@@ -1,6 +1,25 @@
-.vs-map {
+.map-wrapper{
   display: inline-block;
   width: 25%;
+  position: relative;
+}
+
+.value{
+  background: #444;
+  color: #fff;
+  display: block;
+  width: 50px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 3px 4px 5px 4px;
+  //margin-top: -66px;
+  z-index: 10000;
+  //position: absolute;
+  //left: 50%;
+}
+
+.vs-map {
+  display: inline-block;
   text-align: center;
   h2 {
     font-size: 1em;
@@ -38,6 +57,15 @@
   stroke: #777;
   stroke-dasharray: 2,2;
   stroke-linejoin: round;
+}
+
+.region:hover{
+  stroke: red;
+  stroke-width: 4px;
+}
+
+path[data-region]:hover {
+  stroke: red;
 }
 
 .q0-9 { fill:rgb(247,251,255); }

@@ -236,8 +236,12 @@ $offset: 0rem;
   left: 0;
   background-color: $selection-color;
   color: #FFF;
-  padding: 10px;
+  padding: 2px 10px;
   z-index: 10000;
+  h2{
+    margin-bottom: 13px;
+    margin-top: 13px;
+  }
 }
 
 @media only screen and (min-width: 769px) {
