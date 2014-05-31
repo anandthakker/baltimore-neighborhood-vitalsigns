@@ -5,17 +5,19 @@
 }
 
 .value{
-  background: #444;
+  background: #555;
   color: #fff;
   display: block;
   width: 50px;
-  margin: 0 auto;
+  //margin: 0 auto;
   text-align: center;
   padding: 3px 4px 5px 4px;
   //margin-top: -66px;
   z-index: 10000;
-  //position: absolute;
-  //left: 50%;
+  border-radius: 3px;
+  position: absolute;
+  left: 35px;
+  margin-top: -65px;
 }
 
 .vs-map {
