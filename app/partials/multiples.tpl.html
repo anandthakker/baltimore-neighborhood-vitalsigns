@@ -1,0 +1,15 @@
+
+<section class="maps">
+  <div class="welcome" ng-show="selection.selectedValues.length == 0">
+    <h3>Choose some indicators to see maps. &rarr;</h3>
+  </div>
+  <div class="community-info" ng-show="currentCommunity">
+    <h4>{{currentCommunity}}</h4>
+    <span>{{currentIndicatorInfo["Indicator"]}}</span>:
+    <span>{{currentCommunityData.get(currentIndicator)}}</span>
+  </div>
+
+  <vs-map ng-repeat="var in selection.selectedValues"
+    property="{{var}}"
+    hover="selectCommunity">
+</section>

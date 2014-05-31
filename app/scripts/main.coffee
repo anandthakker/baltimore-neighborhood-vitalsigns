@@ -1,5 +1,27 @@
 
-angular.module 'vitalsigns', []
+angular.module 'vitalsigns', ['ui.router']
+
+  .config ($stateProvider, $urlRouterProvider)->
+
+    $stateProvider
+      .state 'main',
+        url: "/i/:indicators"
+        templateUrl: "partials/main.tpl.html"
+        controller: "main"
+
+      .state 'main.multiples',
+        url: "/"
+        views:
+          'controls':
+            templateUrl: "partials/controls.tpl.html"
+          'multiples':
+            templateUrl: "partials/multiples.tpl.html"
+          'comments':
+            # templateUrl: "partials/comments.tpl.html"
+            template: ""
+
+
+
   .run ($rootScope) ->
     $rootScope._ = _
 
@@ -196,9 +218,14 @@ angular.module 'vitalsigns', []
 
   .factory 'Selection', ()->
     class Selection
-      constructor: ()->
+      constructor: (initString)->
+        if initString? and initString.trim().length > 0
+          @selectedValues = initString.split(":")
 
       selectedValues: []
+
+      toString: ()=>
+        (@selectedValues ? []).join(":")
 
       add: (v) =>
         if !@isSelected(v) then @selectedValues.push(v)
@@ -227,8 +254,7 @@ angular.module 'vitalsigns', []
           @toggle(vals)
 
 
-  .controller 'main', ($scope, vsData, Selection)->
-
+  .controller 'main', ($scope, vsData, Selection, $state, $stateParams)->
     vsData.then (dataset)->
       $scope.vitalsigns = dataset.vitalsigns
       $scope.vars = dataset.variables
@@ -238,7 +264,12 @@ angular.module 'vitalsigns', []
       )
       $scope.indicators = _.groupBy liveVars, 'Section'
 
-      $scope.selection = new Selection()
+      $scope.selection = new Selection($stateParams.indicators)
+
+      $scope.$watch 'selection.toString()', (newval,oldval)->
+        return unless newval? or (newval is oldval)
+        $state.go('main.multiples',{indicators: newval})
+      , true
 
       $scope.selectCommunity = (cid, indicator) ->
         $scope.currentCommunity = cid
