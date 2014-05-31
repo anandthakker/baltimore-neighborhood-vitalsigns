@@ -159,7 +159,7 @@ $controls-bg: rgba(200,200,200,.9);
 
   width: 100%;
 
-  $offset: 9rem;
+  $offset: 1rem;
   /* layout */
   position: fixed;
   top: $offset;
@@ -209,7 +209,7 @@ $controls-bg: rgba(200,200,200,.9);
     width: 33%;
 
     .hide-btn {
-      display: none;
+      //display: none;
     }
   }
 
