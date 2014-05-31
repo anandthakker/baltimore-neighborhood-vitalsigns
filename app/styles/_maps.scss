@@ -1,13 +1,17 @@
 .vs-map {
   display: inline-block;
-  width: 200px;
+  width: 25%;
+  text-align: center;
   h2 {
     font-size: 1em;
+    text-align: center;
+    padding: 0px 10px;
   }
 
   .source {
     position: relative;
     .show-source {
+      color: #ccc;
       &:before { content: "[" }
       &:after { content: "]" }
     }

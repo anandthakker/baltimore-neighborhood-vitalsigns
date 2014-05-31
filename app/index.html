@@ -30,7 +30,7 @@
 
         <header class="container">
 
-          <h1>Baltimore Neighborhood Vital Signs</h1>
+          
 
           <!-- From https://github.com/simonwhitaker/github-fork-ribbon-css -->
           <div class="github-fork-ribbon-wrapper right-bottom">
@@ -45,6 +45,7 @@
         </button>
         <div class="container">
           <section class="controls" ng-class="{hidden: !controlsActive}">
+            <h1>Baltimore Neighborhood Vital Signs</h1>
             <ul>
               <li ng-repeat="(section, variables) in indicators">
                 <h2 ng-click="selection.select(variables)">{{section}}</h2>
