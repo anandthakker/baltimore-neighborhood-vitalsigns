@@ -9,7 +9,15 @@
     <span>{{currentCommunityData.get(currentIndicator)}}</span>
   </div>
 
-  <vs-map ng-repeat="var in selection.selectedValues"
-    property="{{var}}"
-    hover="selectCommunity">
+  <div class="map-wrapper" ng-repeat="var in selection.selectedValues">
+    <vs-map
+      property="{{var}}"
+      hover="selectCommunity"></vs-map>
+
+    <div class="value" ng-show="currentCommunity">
+      {{currentCommunityData.get(var)}}
+    </div>
+
+  </div>
+
 </section>

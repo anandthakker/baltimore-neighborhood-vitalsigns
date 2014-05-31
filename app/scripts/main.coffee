@@ -216,6 +216,114 @@ angular.module 'vitalsigns', ['ui.router']
             (d)->
           ]
 
+  .factory 'Histogram', (vsData)->
+    ###
+    * Histogram
+    *
+    ###
+
+    class Histogram
+      constructor: (svg, @regionProperty) ->
+        @svg = d3.select(svg)
+
+      width: 200
+      height: 200
+
+      _mouseover: (d, i) ->
+      _mouseout: (d, i) ->
+      hover: (_) =>
+        if _?
+          [@_mouseover, @_mouseout] = _
+          return this
+        else
+          [@_mouseover, @_mouseout]
+
+      # parse numerical data from strings
+      # TODO: handle dollar signs, commas, etc.
+      parseValue: (val)->
+        parseFloat(val)
+
+      ###
+      Property value accessor.  Uses the "id" property of each topojson
+      object to look up the region's data value.
+      ###
+      value: (d) =>
+        @parseValue(d.get(@regionProperty))
+
+      # method to compute the domain
+      domain: () =>
+        d3.extent @regionData.values(), @value
+
+
+      data: (regiondata) =>
+        @regionData = regiondata
+        @redraw()
+
+      redraw: () =>
+        margin =
+          top: 10
+          right: 30
+          bottom: 30
+          left: 30
+
+        x = d3.scale.linear()
+          .domain(@domain())
+          .range([0, @width])
+
+        histogram =  d3.layout.histogram()
+          .bins(x.ticks(20))
+          .value(@value)
+
+        data = histogram(@regionData.values())
+
+        y = d3.scale.linear()
+          .domain([0, d3.max(data, (d)=>d.y)])
+          .range([@height, 0])
+
+        xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom")
+
+        g = @svg.attr("width", @width - margin.left - margin.right)
+          .attr("height", @height - margin.bottom - margin.top)
+          .append("g")
+          .attr("transform", "translate(#{margin.left},#{margin.right})")
+
+
+        bar = g.selectAll(".bar")
+          .data(data)
+          .enter().append("g")
+          .attr("class", "bar")
+          .attr("transform", (d)=>"translate(#{x(d.x)},#{y(d.y)})")
+
+        rect = bar.append("rect")
+          .attr("x", 1)
+          .attr("width", x(data[0].dx)-1)
+          .attr("height", (d)=>(@height - d.y))
+
+        g.append("g")
+          .attr("class", "x-axis")
+          .attr("transform", "translate(0,#{@height})")
+          .call(xAxis)
+
+
+  .directive 'vsHistogram', (vsData, Histogram)->
+    templateUrl: "partials/vs-histogram.tpl.html"
+    restrict: 'E'
+    replace: true
+    scope:
+      hover: "="
+
+    link: (scope, element, attr)->
+      console.log "Hist"
+      attr.$observe 'property', (prop)->
+        svgNode = element.children("svg")[0]
+        hist = new Histogram(svgNode, prop)
+
+        vsData.then (dataset) ->
+          scope.varInfo = dataset.varInfo.get(prop)
+          hist.data(dataset.vitalsigns)
+
 
   .factory 'Selection', ()->
     class Selection
