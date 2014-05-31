@@ -99,8 +99,21 @@ angular.module 'vitalsigns', []
       width: 200
       height: 200
 
+      ###
+      Hover handler (for regions)
+      TODO: convert other accessors to this chainable style.
+      ###
+      _mouseover: (d, i) ->
+      _mouseout: (d, i) ->
+      hover: (_) =>
+        if _?
+          [@_mouseover, @_mouseout] = _
+          return this
+        else
+          [@_mouseover, @_mouseout]
+
       # parse numerical data from strings
-      # Todo: handle dollar signs, commas, etc.
+      # TODO: handle dollar signs, commas, etc.
       parseValue: (val)->
         parseFloat(val)
 
@@ -149,7 +162,8 @@ angular.module 'vitalsigns', []
           .attr("data-region", (d)->d.id)
           .attr("class", (d)=>
             quantize(@value(d))
-          )
+          ).on "mouseover", (d, i)=>@_mouseover(d,i)
+          .on "mouseout", (d,i)=>@_mouseout(d,i)
 
         @svg.append("path")
           .datum(topojson.mesh(@topojsonData, feature))
@@ -161,6 +175,8 @@ angular.module 'vitalsigns', []
     templateUrl: "partials/vs-map.tpl.html"
     restrict: 'E'
     replace: true
+    scope:
+      hover: "="
 
     link: (scope, element, attr)->
 
@@ -171,6 +187,11 @@ angular.module 'vitalsigns', []
         vsData.then (dataset) ->
           scope.varInfo = dataset.varInfo.get(prop)
           vsMap.data(dataset.topojson, dataset.vitalsigns)
+          vsMap.hover [
+            (d)-> scope.$apply ()->
+              scope.hover(d.id, prop)
+            (d)->
+          ]
 
 
   .factory 'Selection', ()->
@@ -209,6 +230,7 @@ angular.module 'vitalsigns', []
   .controller 'main', ($scope, vsData, Selection)->
 
     vsData.then (dataset)->
+      $scope.vitalsigns = dataset.vitalsigns
       $scope.vars = dataset.variables
 
       liveVars = _.filter(dataset.varInfo.values(), (varInfo)->
@@ -217,3 +239,9 @@ angular.module 'vitalsigns', []
       $scope.indicators = _.groupBy liveVars, 'Section'
 
       $scope.selection = new Selection()
+
+      $scope.selectCommunity = (cid, indicator) ->
+        $scope.currentCommunity = cid
+        $scope.currentIndicator = indicator
+        $scope.currentCommunityData = dataset.vitalsigns.get(cid)
+        $scope.currentIndicatorInfo = dataset.varInfo.get(indicator)
