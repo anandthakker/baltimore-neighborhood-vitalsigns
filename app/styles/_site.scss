@@ -192,9 +192,11 @@ $offset: 0rem;
     left: 100%;
   }
   ul li ul li{
-    padding-bottom:1px;
-    padding-top: 1px;
+    padding-bottom:4px;
+    padding-top: 4px;
+    line-height: 1.2;
   }
+  ul{margin-top: 0px;}
 
   /* selection */
   li {
@@ -202,7 +204,8 @@ $offset: 0rem;
     h2{
       border-bottom: 1px solid #ccc;
       color: #444;
-      padding-bottom: 4px;
+      margin-bottom: 8px;
+      padding-bottom: 2px;
     }
     h2:hover+ul, li:hover {
       background-color: #ddd;
@@ -224,7 +227,7 @@ $offset: 0rem;
     left: inherit;
     top: 0;
     right: 0;
-    width: 33%;
+    width: 30%;
     transition: all .5s;
     &.hidden {
       left: 100%;
@@ -232,7 +235,7 @@ $offset: 0rem;
   }
 
   .maps, .disqus {
-    width: 63%;
+    width: 66%;
     margin-right: 3%;
   }
 }
