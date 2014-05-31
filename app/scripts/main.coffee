@@ -385,3 +385,17 @@ angular.module 'vitalsigns', ['ui.router']
         $scope.currentIndicator = indicator
         $scope.currentCommunityData = dataset.vitalsigns.get(cid)
         $scope.currentIndicatorInfo = dataset.varInfo.get(indicator)
+
+      $scope.moveLeft = (v)->
+        i = _.indexOf($scope.selection.selectedValues, v)
+        tmp = $scope.selection.selectedValues[i]
+        $scope.selection.selectedValues[i]=$scope.selection.selectedValues[i-1]
+        $scope.selection.selectedValues[i-1] = tmp
+        $state.go('main.multiples',{indicators: $scope.selection.toString()})
+
+      $scope.moveRight = (v)->
+        i = _.indexOf($scope.selection.selectedValues, v)
+        tmp = $scope.selection.selectedValues[i]
+        $scope.selection.selectedValues[i]=$scope.selection.selectedValues[i+1]
+        $scope.selection.selectedValues[i+1] = tmp
+        $state.go('main.multiples',{indicators: $scope.selection.toString()})

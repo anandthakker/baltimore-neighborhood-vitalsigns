@@ -16,6 +16,15 @@
       {{currentCommunityData.get(var)}}
     </div>
 
+    <div class="move">
+      <button
+ng-show="!$first"
+        ng-click="moveLeft(var)">&larr;</button>
+      <button
+ng-show="!$last"
+        ng-click="moveRight(var)">&rarr;</button>
+    </div>
+
   </div>
 
 </section>
