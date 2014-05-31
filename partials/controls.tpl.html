@@ -1,0 +1,20 @@
+<section class="controls">
+  <div class="control-ui">
+    <input type="text" class="search" placeholder="Search Available Data"/>
+  </div>
+  <button class="hide-btn" ng-click="controlsActive = !controlsActive;" ng-init="controlsActive=true;">
+    {{ controlsActive ? "X" : "« Indicators "}}
+  </button>
+
+  <ul ng-class="{hidden: !controlsActive}">
+    <li ng-repeat="(section, variables) in indicators">
+      <h2 ng-click="selection.select(variables)">{{section}}</h2>
+      <ul>
+        <li ng-repeat="v in variables" ng-click="selection.select(v['Variable Name'])"
+            ng-class="{selected: selection.isSelected(v['Variable Name'])}">
+          {{v.Indicator}} - {{v.Year}}
+        </li>
+      </ul>
+    </li>
+  </ul>
+</section>
