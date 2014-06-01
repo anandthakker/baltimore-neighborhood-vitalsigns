@@ -1,10 +1,4 @@
 angular.module('vitalsigns')
-  .factory 'skipStateTransition', () ->
-    skip = false
-    (_)->
-      if _? then skip = _
-      return skip
-      
   .factory 'Selection', ()->
     class Selection
       constructor: (initString, delim)->
