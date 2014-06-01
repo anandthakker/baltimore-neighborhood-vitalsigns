@@ -7,22 +7,36 @@
     <h2>{{currentCommunity}}</h2>
   </div>
 
-  <div class="map-wrapper" ng-repeat="var in selection.selectedValues">
-    <vs-map
-      property="{{var}}"
-      hover="selectCommunity"></vs-map>
+  <div class="vs-map" ng-repeat="var in selection.selectedValues">
+
+    <h2>{{varInfo.get(var).Indicator}} - {{varInfo.get(var).Year}}</h2>
+
+    <vs-map property="{{var}}" hover="selectCommunity"></vs-map>
+
+    <section class="source">
+      <button role="button" class="show-source" ng-click="showSource = !showSource;">
+        source
+      </button>
+      <div class="details" ng-show="showSource">
+        Source:
+        <cite>{{varInfo.get(var)["Full Source"]}}</cite>
+        Analysis:
+        <cite>Baltimore Neighborhood Indicators Alliance - Jacob France Institute (2013)</cite>
+      </div>
+    </section>
+
 
     <div class="value" ng-show="currentCommunity">
-      {{currentCommunityData.get(var)}}
+      {{vitalsigns.get(currentCommunity).get(var)}}
     </div>
 
     <div class="move">
-      <button
-ng-show="!$first"
-        ng-click="moveLeft(var)">&larr;</button>
-      <button
-ng-show="!$last"
-        ng-click="moveRight(var)">&rarr;</button>
+      <button ng-show="!$first" ng-click="moveLeft(var)">
+        &larr;
+      </button>
+      <button ng-show="!$last" ng-click="moveRight(var)">
+        &rarr;
+      </button>
     </div>
 
   </div>

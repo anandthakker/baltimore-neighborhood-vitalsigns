@@ -195,7 +195,7 @@ angular.module 'vitalsigns', ['ui.router']
 
 
   .directive 'vsMap', (vsData, Choropleth)->
-    templateUrl: "partials/vs-map.tpl.html"
+    template: "<div><svg></svg></div>"
     restrict: 'E'
     replace: true
     scope:
@@ -366,13 +366,18 @@ angular.module 'vitalsigns', ['ui.router']
   .controller 'main', ($scope, vsData, Selection, $state, $stateParams)->
     vsData.then (dataset)->
       $scope.vitalsigns = dataset.vitalsigns
-      $scope.vars = dataset.variables
+      $scope.varInfo = dataset.varInfo
 
-      liveVars = _.filter(dataset.varInfo.values(), (varInfo)->
-        _.contains dataset.variables, varInfo["Variable Name"]
-      )
-      $scope.indicators = _.groupBy liveVars, 'Section'
+      # For "controls" (the list of indicators to choose from)
+      $scope.indicators = _(dataset.varInfo.values())
+        .filter (varInfo)->
+          _.contains dataset.variables, varInfo["Variable Name"]
+        .groupBy 'Section'
+        .value()
 
+      # This is the bridge between the controls and the map
+      # (and thus should probably be a service, which would let us
+      # separate the controllers)
       $scope.selection = new Selection($stateParams.indicators)
 
       $scope.$watch 'selection.toString()', (newval,oldval)->
@@ -380,11 +385,10 @@ angular.module 'vitalsigns', ['ui.router']
         $state.go('main.multiples',{indicators: newval})
       , true
 
+
       $scope.selectCommunity = (cid, indicator) ->
         $scope.currentCommunity = cid
         $scope.currentIndicator = indicator
-        $scope.currentCommunityData = dataset.vitalsigns.get(cid)
-        $scope.currentIndicatorInfo = dataset.varInfo.get(indicator)
 
       $scope.moveLeft = (v)->
         i = _.indexOf($scope.selection.selectedValues, v)
