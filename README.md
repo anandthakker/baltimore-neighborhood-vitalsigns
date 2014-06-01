@@ -3,6 +3,8 @@
 Playing around with [BNIA][1] data for [Hack Baltimore][2], in the form of a
 basic [AngularJS][4] and [d3js][5]-powered webapp.
 
+[Live Demo](http://anandthakker.github.io/baltimore-neighborhood-vitalsigns/#/i//)
+
 [1]:[http://bniajfi.org/vital_signs/data_downloads/]
 [2]:[http://hackbaltimore.org/events/hack-for-change-baltimore/]
 [4]:[http://angularjs.org]
