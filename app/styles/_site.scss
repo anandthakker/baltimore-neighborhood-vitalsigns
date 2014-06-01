@@ -92,22 +92,6 @@ small { font-size: scale-to(-1); }
 
 /*----------------------------------------------------------------------*/
 
-nav {
-  li {
-    display: inline-block;
-    &:first-child:before {
-      display: none;
-    }
-    &:before {
-      content: "/";
-      padding: 0 .25em;
-    }
-  }
-  .active {
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-}
 
 .container {
   background-position: 0 1.25em;
@@ -125,6 +109,23 @@ footer.container {
   background: white;
   padding: 3em 0 2em 2em;
   @extend %clearfix;
+}
+
+.builtwith {
+  ul {
+    margin: 0;
+    display: inline-block;
+    li {
+      display: inline-block;
+      &:first-child:before {
+        display: none;
+      }
+      &:before {
+        content: "/";
+        padding: 0 .25em;
+      }
+    }
+  }
 }
 
 
