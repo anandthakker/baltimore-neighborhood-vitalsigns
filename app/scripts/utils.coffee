@@ -39,22 +39,26 @@ angular.module('vitalsigns')
         - if _all_ items are selected, then deselect them all.
       ###
       select: (vals) =>
-
-        realOnChange = @onChange
-        changed = false
-        @onChange = ->
-          changed = true
-
         if _.isArray(vals)
+          realOnChange = @onChange
+          changed = false
+          @onChange = ->
+            changed = true
+
           if _.some(vals, (v)=>!@isSelected(v))
             _.map vals, @add
           else
             _.map vals, @remove
+
+          @onChange = realOnChange
+          if changed then @onChange()
+
         else
           @toggle(vals)
 
-        @onChange = realOnChange
-        if changed then @onChange()
+      clear: () =>
+        @selectedValues = []
+        @onChange()
 
 
       onChange: ->

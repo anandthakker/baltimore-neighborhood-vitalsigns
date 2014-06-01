@@ -85,7 +85,7 @@ angular.module 'vitalsigns', ['ui.router']
     $scope.communitySelection = communitySelection
 
     $scope.selectCommunity = (cid)->
-      $scope.communitySelection.toggle(cid)
+      $scope.communitySelection.select(cid)
 
     $scope.showCommunity = (cid, indicator) ->
       $scope.currentCommunity = cid
