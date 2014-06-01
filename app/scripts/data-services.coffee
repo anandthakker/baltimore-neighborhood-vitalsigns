@@ -58,6 +58,7 @@ angular.module 'vitalsigns'
     ###
     read_csv = (d)->
       id = d["CSA2010"]
+      return if id is "Baltimore City"
       if not vsData.vitalsigns.has(id)
         vsData.vitalsigns.set(id, d3.map())
 
@@ -67,6 +68,7 @@ angular.module 'vitalsigns'
       return d
 
     done = (error, rows) ->
+      if error then throw new Error(error)
       for prop, val of rows[0]
         vsData.variables.push prop unless prop is "CSA2010"
 

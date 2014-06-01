@@ -53,7 +53,11 @@ angular.module('vitalsigns')
 
       # method to compute the domain for our color scale
       domain: () =>
-        d3.extent @regionData.values(), (d)=>@parseValue(d.get(@regionProperty))
+        values = _(@regionData.values()).map (d)=>@parseValue(d.get(@regionProperty))
+          .filter (v)->!isNaN(v)
+          .value()
+        d = d3.extent values
+
 
       # method to compute the range for our color scale
       range: () =>
@@ -89,9 +93,7 @@ angular.module('vitalsigns')
           .attr("data-region", (d)->d.id)
           .attr("class", (d)=>
             q = quantize(@value(d))
-            console.log d
-            console.log q
-            "region " + q)
+            "region " + q
           ).on "mouseover", (d, i)=>@_mouseover(d,i)
           .on "mouseout", (d,i)=>@_mouseout(d,i)
           .on "click", (d,i)=>@_click(d,i)
