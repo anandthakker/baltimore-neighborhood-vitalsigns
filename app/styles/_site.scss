@@ -125,30 +125,6 @@ footer.container {
   background: white;
   padding: 3em 0 2em 2em;
   @extend %clearfix;
-
-  .copy {
-    margin-top: lines(1);
-    p, nav, ul {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-  }
-}
-
-@media only screen and (min-width: 769px) {
-  footer.container {
-    //position: fixed;
-    //bottom: 0;
-    .copy {
-      float: left;
-      p, nav, ul {
-        display: inline;
-      }
-      nav {
-        margin: 0 2em;
-      }
-    }
-  }
 }
 
 
@@ -215,7 +191,7 @@ $offset: 0rem;
       background-color: $selection-color;
       color: #FFF;
     }
-    
+
   }
 
 }
@@ -225,7 +201,7 @@ $offset: 0rem;
       width: 100%;
       padding: 7px 10px ;
       margin-top: 20px;
-      font-size: scale-to(1); 
+      font-size: scale-to(1);
     }
 }
 

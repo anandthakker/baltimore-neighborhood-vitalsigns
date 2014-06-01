@@ -79,6 +79,11 @@ sizing the `svg`.)
 
 I'll let you know once I've done it :)
 
+## Authors
+
+[Anand Thakker](http://twitter.com/anandthakker)
+[Bryan Connor](http://twitter.com/bryanconnor)
+
 ## License
 
 Read [LICENSE](LICENSE).
