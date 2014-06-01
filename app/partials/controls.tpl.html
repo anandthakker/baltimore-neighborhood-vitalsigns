@@ -1,7 +1,7 @@
 <section class="controls">
   <div class="control-ui">
     <input type="text" class="search" placeholder="Search Available Data"/>
-    <button role="button" ng-click="selection.clear()">Clear Selection</button>
+    <button role="button" ng-click="clear()">Clear Selection</button>
   </div>
   <button class="hide-btn" ng-click="controlsActive = !controlsActive;" ng-init="controlsActive=true;">
     {{ controlsActive ? "X" : "« Indicators "}}
@@ -9,10 +9,13 @@
 
   <ul ng-class="{hidden: !controlsActive}">
     <li ng-repeat="(section, variables) in indicators">
-      <h2 ng-click="selection.select(_.pluck(variables, 'Variable Name'))">{{section}}</h2>
-      <ul>
-        <li ng-repeat="v in variables" ng-click="selection.select(v['Variable Name'])"
-            ng-class="{selected: selection.isSelected(v['Variable Name'])}">
+      <h2 ng-click="select(variables)">{{section}}</h2>
+      <ul ng-mouseup="endDragSelect()"
+        ng-mouseleave="endDragSelect()">
+        <li ng-repeat="v in variables"
+          ng-mousedown="startDragSelect(v)"
+          ng-mouseover="dragSelect(section, v)"
+          ng-class="{selected: isSelected(v)}">
           {{v.Indicator}} - {{v.Year}}
         </li>
       </ul>

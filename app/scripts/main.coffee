@@ -8,7 +8,6 @@ angular.module 'vitalsigns', ['ui.router']
         url: "/i/:indicators/c/:communities"
         abstract: true
         templateUrl: "partials/main.tpl.html"
-        controller: "main"
         resolve:
           indicatorSelection: ["$location", "$rootScope", "$stateParams", "Selection",($location, $rootScope, $stateParams, Selection)->
             selection = new Selection($stateParams.indicators)
@@ -46,8 +45,11 @@ angular.module 'vitalsigns', ['ui.router']
         views:
           'controls':
             templateUrl: "partials/controls.tpl.html"
+            controller: "controls"
           'multiples':
             templateUrl: "partials/multiples.tpl.html"
+            controller: "multiples"
+
           'comments':
             # templateUrl: "partials/comments.tpl.html"
             template: ""
@@ -70,16 +72,45 @@ angular.module 'vitalsigns', ['ui.router']
     #Configures $urlRouter's listener *after* your custom listener
     $urlRouter.listen();
 
-  .controller 'main', ($scope, dataset, indicatorSelection, communitySelection, $location, $state, $stateParams)->
-    $scope.vitalsigns = dataset.vitalsigns
+  .controller "controls", ($scope, dataset, indicatorSelection)->
     $scope.varInfo = dataset.varInfo
 
-    # For "controls" (the list of indicators to choose from)
     $scope.indicators = _(dataset.varInfo.values())
     .filter (varInfo)->
       _.contains dataset.variables, varInfo["Variable Name"]
     .groupBy 'Section'
     .value()
+
+    $scope.clear = ()->indicatorSelection.clear()
+    $scope.isSelected = (v)->indicatorSelection.isSelected(v["Variable Name"])
+    $scope.select = (v)->indicatorSelection.select(
+      if _.isArray(v)
+        _.pluck(variables, 'Variable Name')
+      else
+        v["Variable Name"]
+    )
+
+    lastDragSelect = null
+    $scope.startDragSelect = (v)->
+      $scope.select(v)
+      if($scope.isSelected(v))
+        lastDragSelect = v
+
+    $scope.endDragSelect = ()->
+      lastDragSelect = null
+
+    $scope.dragSelect = (section, v)->
+      if(lastDragSelect?)
+        m = 1 + _($scope.indicators[section]).indexOf lastDragSelect
+        n = _($scope.indicators[section]).indexOf v
+        for i in [m..n]
+          indicatorSelection.add($scope.indicators[section][i]["Variable Name"])
+
+
+  .controller 'multiples', ($scope, dataset, indicatorSelection, communitySelection)->
+    $scope.vitalsigns = dataset.vitalsigns
+    $scope.varInfo = dataset.varInfo
+
 
     $scope.selection = indicatorSelection
     $scope.communitySelection = communitySelection
