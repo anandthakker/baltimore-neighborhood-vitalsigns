@@ -240,7 +240,8 @@ angular.module('vitalsigns')
           vsMap.hover [
             (d)-> scope.$apply ()->
               scope.hover(d.id, prop)
-            (d)->
+            (d)-> scope.$apply () ->
+              scope.hover(null, null)
           ]
 
           vsMap.click (d)->
@@ -284,7 +285,8 @@ angular.module('vitalsigns')
           hist.hover [
             (d)-> scope.$apply ()->
               scope.hover(d, prop)
-            (d)->
+            (d)-> scope.$apply () ->
+              scope.hover(null, null)
           ]
           hist.click (d)->
             scope.$apply ()->

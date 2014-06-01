@@ -115,25 +115,24 @@ angular.module 'vitalsigns', ['ui.router']
     $scope.selection = indicatorSelection
     $scope.communitySelection = communitySelection
 
+    $scope.showCommunity = (cid, indicator) ->
+      $scope.showCommunities (if cid? then [cid] else []), indicator
+
+    $scope.showCommunities = (cid, indicator) ->
+      $scope.activeCommunities = if cid? then cid else []
+      $scope.currentIndicator = indicator
+      if(cid.length is 1)
+        $scope.currentCommunity = cid[0]
+      else
+        $scope.currentCommunity = null
+
     $scope.selectCommunity = (cid)->
       $scope.communitySelection.select(cid)
-
-    $scope.showCommunity = (cid, indicator) ->
-      $scope.currentCommunity = cid
-      $scope.currentIndicator = indicator
-      $scope.activeCommunities = [cid]
 
     $scope.selectCommunities = (cid)->
       $scope.communitySelection.select(cid)
       $scope.activeCommunities = []
 
-    $scope.showCommunities = (cid, indicator) ->
-      if(cid.length is 1)
-        $scope.currentCommunity = cid[0]
-      else
-        $scope.currentCommunity = null
-      $scope.currentIndicator = indicator
-      $scope.activeCommunities = cid
 
 
     $scope.moveLeft = (v)->
