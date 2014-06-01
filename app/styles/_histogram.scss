@@ -1,6 +1,8 @@
 .bar rect {
-  fill: steelblue;
   shape-rendering: crispEdges;
+  stroke: #777;
+  stroke-dasharray: 2,2;
+  stroke-linejoin: round;
 }
 
 .bar text {
@@ -10,5 +12,6 @@
 .axis path, .axis line {
   fill: none;
   stroke: #000;
+  stroke-weight: 1px;
   shape-rendering: crispEdges;
 }

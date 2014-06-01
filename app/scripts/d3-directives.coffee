@@ -1,5 +1,10 @@
 angular.module('vitalsigns')
-  .factory 'Choropleth', (vsData)->
+  .factory 'parseValue', ()->
+    (val)->
+      val = (val ? "").replace /[$,]/, ""
+      parseFloat(val)
+
+  .factory 'Choropleth', (parseValue)->
 
     ###
     * d3 Map Drawing
@@ -39,28 +44,23 @@ angular.module('vitalsigns')
         else
           return @_click
 
-      # parse numerical data from strings
-      parseValue: (val)->
-        val = (val ? "").replace /[$,]/, ""
-        parseFloat(val)
-
       ###
       Property value accessor.  Uses the "id" property of each topojson
       object to look up the region's data value.
       ###
       value: (d) =>
-        @parseValue(@regionData.get(d.id)?.get(@regionProperty))
+        parseValue(@regionData.get(d.id)?.get(@regionProperty))
 
       # method to compute the domain for our color scale
       domain: () =>
-        values = _(@regionData.values()).map (d)=>@parseValue(d.get(@regionProperty))
+        values = _(@regionData.values()).map (d)=>parseValue(d.get(@regionProperty))
           .filter (v)->!isNaN(v)
           .value()
         d = d3.extent values
 
 
       # method to compute the range for our color scale
-      range: () =>
+      colorRange: () =>
         d3.range(9).map (i) -> "q#{i}-9"
 
       data: (mapdata, regiondata) =>
@@ -80,7 +80,7 @@ angular.module('vitalsigns')
         ###
         quantize = d3.scale.quantize()
           .domain(@domain())
-          .range(@range())
+          .range(@colorRange())
 
         @svg.attr("width", @width)
           .attr("height", @height)
@@ -104,7 +104,95 @@ angular.module('vitalsigns')
           .attr("class", "region-boundary");
 
 
+  .factory 'Histogram', (parseValue)->
+    ###
+    * Histogram
+    *
+    ###
+
+    class Histogram
+      constructor: (svg, @regionProperty) ->
+        @svg = d3.select(svg)
+
+      width: 200
+      height: 100
+
+      value: (d) =>
+        parseValue(d.get(@regionProperty))
+
+      # method to compute the domain
+      domain: () =>
+        d3.extent @regionData.values(), @value
+
+      # method to compute the range for our color scale
+      colorRange: () =>
+        d3.range(9).map (i) -> "q#{i}-9"
+
+      data: (regiondata) =>
+        @regionData = regiondata
+        @redraw()
+
+      redraw: () =>
+        margin =
+          top: 5
+          right: 10
+          bottom: 25
+          left: 10
+
+        w = @width - margin.left - margin.right
+        h = @height - margin.top - margin.bottom
+
+        quantize = d3.scale.quantize()
+          .domain(@domain())
+          .range(@colorRange())
+
+        x = d3.scale.linear()
+          .domain(@domain())
+          .range([0, w])
+
+        histogram =  d3.layout.histogram()
+          .bins(x.ticks(10))
+          .value(@value)
+
+        data = histogram(@regionData.values())
+
+        y = d3.scale.linear()
+          .domain([0, d3.max(data, (d)=>d.y)])
+          .range([h, 0])
+
+        xAxis = d3.svg.axis()
+          .scale(x)
+          .ticks(5)
+          .orient("bottom")
+
+        g = @svg.attr("width", @width)
+          .attr("height", @height)
+          .append("g")
+          .attr("transform", "translate(#{margin.left},#{margin.top})")
+
+
+        bar = g.selectAll(".bar")
+          .data(data)
+          .enter().append("g")
+          .attr("class", "bar")
+          .attr("transform", (d)=>"translate(#{x(d.x)},#{y(d.y)})")
+
+        rect = bar.append("rect")
+          .attr("x", 1)
+          .attr("width", x(data[0].dx)-x(0))
+          .attr("height", (d)=>(h - y(d.y)))
+          .attr("class", (d)=>
+            quantize(d.x)
+          )
+
+        g.append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(0,#{h})")
+          .call(xAxis)
+
+
   .directive 'vsMap', (vsData, Choropleth)->
+
     template: "<div><svg></svg></div>"
     restrict: 'E'
     replace: true
@@ -146,106 +234,15 @@ angular.module('vitalsigns')
                 _.contains(scope.selected, d.id)
           , true
 
-  .factory 'Histogram', (vsData)->
-    ###
-    * Histogram
-    *
-    ###
-
-    class Histogram
-      constructor: (svg, @regionProperty) ->
-        @svg = d3.select(svg)
-
-      width: 200
-      height: 200
-
-      _mouseover: (d, i) ->
-      _mouseout: (d, i) ->
-      hover: (_) =>
-        if _?
-          [@_mouseover, @_mouseout] = _
-          return this
-        else
-          [@_mouseover, @_mouseout]
-
-      # parse numerical data from strings
-      # TODO: handle dollar signs, commas, etc.
-      parseValue: (val)->
-        parseFloat(val)
-
-      ###
-      Property value accessor.  Uses the "id" property of each topojson
-      object to look up the region's data value.
-      ###
-      value: (d) =>
-        @parseValue(d.get(@regionProperty))
-
-      # method to compute the domain
-      domain: () =>
-        d3.extent @regionData.values(), @value
-
-
-      data: (regiondata) =>
-        @regionData = regiondata
-        @redraw()
-
-      redraw: () =>
-        margin =
-          top: 10
-          right: 30
-          bottom: 30
-          left: 30
-
-        x = d3.scale.linear()
-          .domain(@domain())
-          .range([0, @width])
-
-        histogram =  d3.layout.histogram()
-          .bins(x.ticks(20))
-          .value(@value)
-
-        data = histogram(@regionData.values())
-
-        y = d3.scale.linear()
-          .domain([0, d3.max(data, (d)=>d.y)])
-          .range([@height, 0])
-
-        xAxis = d3.svg.axis()
-          .scale(x)
-          .orient("bottom")
-
-        g = @svg.attr("width", @width - margin.left - margin.right)
-          .attr("height", @height - margin.bottom - margin.top)
-          .append("g")
-          .attr("transform", "translate(#{margin.left},#{margin.right})")
-
-
-        bar = g.selectAll(".bar")
-          .data(data)
-          .enter().append("g")
-          .attr("class", "bar")
-          .attr("transform", (d)=>"translate(#{x(d.x)},#{y(d.y)})")
-
-        rect = bar.append("rect")
-          .attr("x", 1)
-          .attr("width", x(data[0].dx)-1)
-          .attr("height", (d)=>(@height - d.y))
-
-        g.append("g")
-          .attr("class", "x-axis")
-          .attr("transform", "translate(0,#{@height})")
-          .call(xAxis)
-
 
   .directive 'vsHistogram', (vsData, Histogram)->
-    templateUrl: "partials/vs-histogram.tpl.html"
+    template: "<div><svg></svg></div>"
     restrict: 'E'
     replace: true
     scope:
       hover: "="
 
     link: (scope, element, attr)->
-      console.log "Hist"
       attr.$observe 'property', (prop)->
         svgNode = element.children("svg")[0]
         hist = new Histogram(svgNode, prop)
