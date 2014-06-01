@@ -1,16 +1,6 @@
 angular.module('vitalsigns')
-  .factory 'parseValue', ()->
-    (val)->
-      val = (val ? "").replace /[$,]/, ""
-      parseFloat(val)
 
-    ###
-    TODO: Both of these classes (Choropleth and Histogram) know too much
-    about d3 maps.  Pull the default data access out into the directives,
-    so that the classes can just expect arrays.
-    ###
-
-  .factory 'Choropleth', (parseValue)->
+  .factory 'Choropleth', ()->
 
     ###
     * d3 Map Drawing
@@ -51,27 +41,22 @@ angular.module('vitalsigns')
           return @_click
 
       ###
-      Property value accessor.  Uses the "id" property of each topojson
-      object to look up the region's data value.
+      Property value accessor. Takes a topojson feature as input, and should
+      return the value to be mapped onto the color scale for that feature.
       ###
-      value: (d) =>
-        parseValue(@regionData.get(d.id)?.get(@regionProperty))
+      value: (d) -> @_data[d]
 
       # method to compute the domain for our color scale
-      domain: () =>
-        values = _(@regionData.values()).map (d)=>parseValue(d.get(@regionProperty))
-          .filter (v)->!isNaN(v)
-          .value()
-        d = d3.extent values
+      domain: () => d3.extent @_data, @value
 
 
       # method to compute the range for our color scale
       colorRange: () =>
         d3.range(9).map (i) -> "q#{i}-9"
 
-      data: (mapdata, regiondata) =>
+      data: (mapdata, data) =>
         @topojsonData = mapdata
-        @regionData = regiondata
+        @_data = data
         @redraw()
 
       redraw: () =>
@@ -110,7 +95,7 @@ angular.module('vitalsigns')
           .attr("class", "region-boundary");
 
 
-  .factory 'Histogram', (parseValue)->
+  .factory 'Histogram', ()->
     ###
     * Histogram
     *
@@ -152,8 +137,8 @@ angular.module('vitalsigns')
       colorRange: () =>
         d3.range(9).map (i) -> "q#{i}-9"
 
-      data: (regiondata) =>
-        @regionData = regiondata
+      data: (data) =>
+        @_data = data
         @redraw()
 
       redraw: () =>
@@ -178,7 +163,7 @@ angular.module('vitalsigns')
           .bins(x.ticks(10))
           .value(@value)
 
-        data = histogram(@regionData.keys())
+        data = histogram(@_data)
 
         y = d3.scale.linear()
           .domain([0, d3.max(data, (d)=>d.y)])
@@ -216,8 +201,17 @@ angular.module('vitalsigns')
           .attr("transform", "translate(0,#{h})")
           .call(xAxis)
 
+  .value 'calculateExtent', (dataset, prop)->
+    relatedVars = dataset.getAllRelatedIndicators(prop)
 
-  .directive 'vsMap', (vsData, Choropleth)->
+    values = _(dataset.vitalsigns.keys()).map (d)->
+      relatedVars.map (indicator)->dataset.getIndicatorValue(d, indicator)
+    .flatten()
+    .filter (v)->!isNaN(v)
+    .value()
+    d = d3.extent values
+
+  .directive 'vsMap', (vsData, Choropleth, calculateExtent)->
 
     template: "<div><svg></svg></div>"
     restrict: 'E'
@@ -236,7 +230,13 @@ angular.module('vitalsigns')
 
         vsData.then (dataset) ->
           scope.varInfo = dataset.varInfo.get(prop)
-          vsMap.data(dataset.topojson, dataset.vitalsigns)
+
+          vsMap.value = (d)->
+            dataset.getIndicatorValue(d.id, prop)
+
+          vsMap.domain = ()->calculateExtent(dataset, prop)
+
+          vsMap.data(dataset.topojson, dataset.vitalsigns.keys())
           vsMap.hover [
             (d)-> scope.$apply ()->
               scope.hover(d.id, prop)
@@ -263,7 +263,7 @@ angular.module('vitalsigns')
           , true
 
 
-  .directive 'vsHistogram', (vsData, Histogram)->
+  .directive 'vsHistogram', (vsData, Histogram, calculateExtent)->
     template: "<div><svg></svg></div>"
     restrict: 'E'
     replace: true
@@ -281,7 +281,13 @@ angular.module('vitalsigns')
 
         vsData.then (dataset) ->
           scope.varInfo = dataset.varInfo.get(prop)
-          hist.data(dataset.vitalsigns)
+
+          hist.value = (d)->
+            dataset.getIndicatorValue(d, prop)
+
+          hist.domain = ()->calculateExtent(dataset, prop)
+
+          hist.data(dataset.vitalsigns.keys())
           hist.hover [
             (d)-> scope.$apply ()->
               scope.hover(d, prop)

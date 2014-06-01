@@ -9,6 +9,16 @@ angular.module 'vitalsigns'
       vitalsigns: d3.map()
       variables: []
       varInfo: d3.map()
+      getIndicatorValue: (community, indicator)->
+        val = vsData.vitalsigns.get(community)?.get(indicator)
+        val = (val ? "").replace /[$,]/, ""
+        parseFloat(val)
+
+      getAllRelatedIndicators: (indicator)->
+        _(vsData.varInfo).where({"Indicator":vsData.varInfo.get(indicator)["Indicator"]})
+          .pluck("Variable Name")
+          .value()
+
 
     ###
     * Read data
