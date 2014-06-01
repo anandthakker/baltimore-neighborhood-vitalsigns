@@ -121,7 +121,7 @@ angular.module 'vitalsigns', ['ui.router']
     $scope.showCommunities = (cid, indicator) ->
       $scope.activeCommunities = if cid? then cid else []
       $scope.currentIndicator = indicator
-      if(cid.length is 1)
+      if(cid?.length is 1)
         $scope.currentCommunity = cid[0]
       else
         $scope.currentCommunity = null

@@ -9,7 +9,7 @@ angular.module('vitalsigns')
     ###
 
     class Choropleth
-      constructor: (svg, @feature, @regionProperty) ->
+      constructor: (svg, @feature) ->
         @svg = d3.select(svg)
         @projection = d3.geo.mercator()
           .scale(50000)
@@ -102,7 +102,7 @@ angular.module('vitalsigns')
     ###
 
     class Histogram
-      constructor: (svg, @regionProperty) ->
+      constructor: (svg) ->
         @svg = d3.select(svg)
 
       width: 200
@@ -126,12 +126,10 @@ angular.module('vitalsigns')
           return @_click
 
 
-      value: (d) =>
-        parseValue(@regionData.get(d).get(@regionProperty))
+      value: (d) => @_data[d]
 
       # method to compute the domain
-      domain: () =>
-        d3.extent @regionData.keys(), @value
+      domain: () => d3.extent @_data, @value
 
       # method to compute the range for our color scale
       colorRange: () =>
@@ -201,6 +199,133 @@ angular.module('vitalsigns')
           .attr("transform", "translate(0,#{h})")
           .call(xAxis)
 
+
+  .factory 'Scatter', ()->
+    ###
+    * Histogram
+    *
+    ###
+
+    class Scatter
+      constructor: (svg) ->
+        @svg = d3.select(svg)
+        @g = @svg.append("g")
+        @g.append("g")
+          .attr("class", "x-axis axis")
+        @g.append("g")
+          .attr("class", "y-axis axis")
+        @g.append("text")
+          .attr("class", "x-axis-label")
+        @g.append("text")
+          .attr("class", "y-axis-label")
+
+
+      width: 400
+      height: 400
+
+
+      _mouseover: (d, i) ->
+      _mouseout: (d, i) ->
+      hover: (_) =>
+        if _?
+          [@_mouseover, @_mouseout] = _
+          return this
+        else
+          [@_mouseover, @_mouseout]
+
+      _click: (d, i) ->
+      click: (_) =>
+        if _?
+          @_click = _
+        else
+          return @_click
+
+      xValue: (d) => @_data[d][0]
+      xDomain: () => d3.extent @_data, @value
+      xLabel: ""
+      yValue: (d) => @_data[d][1]
+      yDomain: () => d3.extent @_data, @value
+      yLabel: ""
+
+
+      label: (d) => "(#{@xValue(d)},#{@yValue(d)})"
+
+      data: (data) =>
+        @_data = data
+        @redraw()
+
+      redraw: () =>
+        margin =
+          top: 5
+          right: 10
+          bottom: 25
+          left: 50
+
+        w = @width - margin.left - margin.right
+        h = @height - margin.top - margin.bottom
+
+        x = d3.scale.linear()
+          .domain(@xDomain())
+          .range([0, w])
+
+        y = d3.scale.linear()
+          .domain(@yDomain())
+          .range([h, 0])
+
+
+        xAxis = d3.svg.axis()
+          .scale(x)
+          .ticks(5)
+          .orient("bottom")
+
+        yAxis = d3.svg.axis()
+          .scale(y)
+          .ticks(5)
+          .orient("left")
+
+        @svg.attr("width", @width)
+          .attr("height", @height)
+
+        @g.attr("transform", "translate(#{margin.left},#{margin.top})")
+
+        point = @g.selectAll(".point")
+          .data(@_data)
+        point.enter()
+          .append("circle")
+        point.exit().remove()
+        point
+          .attr("class", "point")
+          .attr("r", 6)
+          .attr "cx", (d,i)=>x(@xValue(d))
+          .attr "cy", (d,i)=>y(@yValue(d))
+          .on "mouseover", (d, i)=>@_mouseover(d,i)
+          .on "mouseout", (d,i)=>@_mouseout(d,i)
+          .on "click", (d,i)=>@_click(d,i)
+
+        text = @g.selectAll(".label")
+          .data(@_data)
+        text.enter()
+          .append("text")
+        text.exit().remove()
+        text
+          .attr("class", "label")
+          .attr "x", (d,i)=>x(@xValue(d)) + 5
+          .attr "y", (d,i)=>y(@yValue(d) + 5)
+          .text((d)=>@label(d))
+
+        @g.select(".x-axis")
+          .attr("transform", "translate(0,#{h})")
+          .call(xAxis)
+        @g.select(".y-axis")
+          .call(yAxis)
+
+        @g.select(".x-axis-label")
+          .text(@xLabel)
+        @g.select(".y-axis-label")
+          .text(@yLabel)
+
+
+
   .value 'calculateExtent', (dataset, prop)->
     relatedVars = dataset.getAllRelatedIndicators(prop)
 
@@ -226,7 +351,7 @@ angular.module('vitalsigns')
 
       attr.$observe 'property', (prop)->
         svgNode = element.children("svg")[0]
-        vsMap = new Choropleth(svgNode, "CSA_NSA_Tracts", prop)
+        vsMap = new Choropleth(svgNode, "CSA_NSA_Tracts")
 
         vsData.then (dataset) ->
           scope.varInfo = dataset.varInfo.get(prop)
@@ -277,7 +402,7 @@ angular.module('vitalsigns')
 
       attr.$observe 'property', (prop)->
         svgNode = element.children("svg")[0]
-        hist = new Histogram(svgNode, prop)
+        hist = new Histogram(svgNode)
 
         vsData.then (dataset) ->
           scope.varInfo = dataset.varInfo.get(prop)
@@ -311,3 +436,62 @@ angular.module('vitalsigns')
               .classed "selected", (d)->
                 _(d).every (cid)->_(newval).contains(cid)
           , true
+
+  .directive 'vsScatter', (vsData, Scatter, calculateExtent)->
+    template: "<div><svg></svg></div>"
+    restrict: 'E'
+    replace: true
+    scope:
+      hover: "="
+      click: "="
+      selected: "="
+      active: "="
+      indicators: "="
+
+    link: (scope, element, attr)->
+      svgNode = element.children("svg")[0]
+      scatter = new Scatter(svgNode)
+
+      vsData.then (dataset) ->
+        scatter.hover [
+          (d)-> scope.$apply ()->
+            scope.hover(d, null)
+          (d)-> scope.$apply () ->
+            scope.hover(null, null)
+        ]
+        scatter.click (d)->
+          scope.$apply ()->
+            scope.click(d)
+
+        scope.$watch 'indicators', (newval)->
+          return unless newval?
+          [x,y] = scope.indicators
+
+          scatter.xValue = (d)->
+            dataset.getIndicatorValue(d, x)
+          scatter.yValue = (d)->
+            dataset.getIndicatorValue(d, y)
+          scatter.xDomain = ()->calculateExtent(dataset, x)
+          scatter.yDomain = ()->calculateExtent(dataset, y)
+
+          scatter.xLabel = dataset.varInfo.get(x)["Variable Name"]
+          scatter.yLabel = dataset.varInfo.get(y)["Variable Name"]
+
+          scatter.label = (d)->d
+
+          scatter.data(dataset.vitalsigns.keys())
+
+          scope.$watch "active", (newval)->
+            return unless newval?
+            d3.select(svgNode).selectAll(".point,.label")
+              .classed "active", (d)->
+                newval.length > 0 and _(newval).every (cid)->_(d).contains(cid)
+          , true
+
+          scope.$watch "selected", (newval)->
+            return unless newval?
+            d3.select(svgNode).selectAll(".point,.label")
+              .classed "selected", (d)->
+                _(newval).contains(d)
+          , true
+        , true

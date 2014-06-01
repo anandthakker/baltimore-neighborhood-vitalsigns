@@ -13,6 +13,10 @@
   bottom: 180px;
 }
 
+.vs-scatter {
+  display: inline-block
+}
+
 .vs-map {
   display: inline-block;
   width: 25%;
@@ -47,6 +51,8 @@
 .region {
   fill: #fff;
   stroke: none;
+  @extend %selectable;
+  @extend %hoverable;
 }
 
 .region-boundary {
@@ -61,10 +67,18 @@
   stroke: #777;
   stroke-dasharray: 2,2;
   stroke-linejoin: round;
+  @extend %selectable;
+  @extend %hoverable;
 }
 
 .bar text {
   fill: #fff;
+}
+
+.point {
+  fill: #888;
+  @extend %selectable;
+  @extend %hoverable;
 }
 
 .axis path, .axis line {
@@ -74,15 +88,19 @@
   shape-rendering: crispEdges;
 }
 
+.label {
+  display: none;
+}
+
 
 // Regions that have been selected.
-.selected, rect.selected {
+%selectable.selected {
   stroke: orange;
   stroke-width: 2px;
 }
 
 // The region being hovered.
-.active, rect.active {
+%hoverable.active {
   stroke: red;
 }
 
