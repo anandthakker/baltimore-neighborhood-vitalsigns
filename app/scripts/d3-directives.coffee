@@ -4,6 +4,12 @@ angular.module('vitalsigns')
       val = (val ? "").replace /[$,]/, ""
       parseFloat(val)
 
+    ###
+    TODO: Both of these classes (Choropleth and Histogram) know too much
+    about d3 maps.  Pull the default data access out into the directives,
+    so that the classes can just expect arrays.
+    ###
+
   .factory 'Choropleth', (parseValue)->
 
     ###
@@ -117,12 +123,30 @@ angular.module('vitalsigns')
       width: 200
       height: 100
 
+
+      _mouseover: (d, i) ->
+      _mouseout: (d, i) ->
+      hover: (_) =>
+        if _?
+          [@_mouseover, @_mouseout] = _
+          return this
+        else
+          [@_mouseover, @_mouseout]
+
+      _click: (d, i) ->
+      click: (_) =>
+        if _?
+          @_click = _
+        else
+          return @_click
+
+
       value: (d) =>
-        parseValue(d.get(@regionProperty))
+        parseValue(@regionData.get(d).get(@regionProperty))
 
       # method to compute the domain
       domain: () =>
-        d3.extent @regionData.values(), @value
+        d3.extent @regionData.keys(), @value
 
       # method to compute the range for our color scale
       colorRange: () =>
@@ -154,7 +178,7 @@ angular.module('vitalsigns')
           .bins(x.ticks(10))
           .value(@value)
 
-        data = histogram(@regionData.values())
+        data = histogram(@regionData.keys())
 
         y = d3.scale.linear()
           .domain([0, d3.max(data, (d)=>d.y)])
@@ -183,7 +207,9 @@ angular.module('vitalsigns')
           .attr("height", (d)=>(h - y(d.y)))
           .attr("class", (d)=>
             quantize(d.x)
-          )
+          ).on "mouseover", (d, i)=>@_mouseover(d,i)
+          .on "mouseout", (d,i)=>@_mouseout(d,i)
+          .on "click", (d,i)=>@_click(d,i)
 
         g.append("g")
           .attr("class", "axis")
@@ -224,11 +250,12 @@ angular.module('vitalsigns')
           scope.$watch "active", (newval)->
             return unless newval?
             d3.select(svgNode).selectAll(".region")
-              .classed "active", (d)-> d.id is scope.active
+              .classed "active", (d)->
+                _.contains(scope.active, d.id)
+          , true
 
           scope.$watch "selected", (newval)->
             return unless newval?
-            console.log newval
             d3.select(svgNode).selectAll(".region")
               .classed "selected", (d)->
                 _.contains(scope.selected, d.id)
@@ -241,8 +268,12 @@ angular.module('vitalsigns')
     replace: true
     scope:
       hover: "="
+      click: "="
+      selected: "="
+      active: "="
 
     link: (scope, element, attr)->
+
       attr.$observe 'property', (prop)->
         svgNode = element.children("svg")[0]
         hist = new Histogram(svgNode, prop)
@@ -250,3 +281,25 @@ angular.module('vitalsigns')
         vsData.then (dataset) ->
           scope.varInfo = dataset.varInfo.get(prop)
           hist.data(dataset.vitalsigns)
+          hist.hover [
+            (d)-> scope.$apply ()->
+              scope.hover(d, prop)
+            (d)->
+          ]
+          hist.click (d)->
+            scope.$apply ()->
+              scope.click(d)
+
+          scope.$watch "active", (newval)->
+            return unless newval?
+            d3.select(svgNode).selectAll("rect")
+              .classed "active", (d)->
+                newval.length > 0 and _(newval).every (cid)->_(d).contains(cid)
+          , true
+
+          scope.$watch "selected", (newval)->
+            return unless newval?
+            d3.select(svgNode).selectAll("rect")
+              .classed "selected", (d)->
+                _(d).every (cid)->_(newval).contains(cid)
+          , true

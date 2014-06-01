@@ -11,11 +11,17 @@
 
     <h2>{{varInfo.get(var).Indicator}} - {{varInfo.get(var).Year}}</h2>
 
-    <vs-map property="{{var}}" hover="showCommunity" click="selectCommunity"
+    <vs-map property="{{var}}"
+      hover="showCommunity"
+      click="selectCommunity"
       selected="communitySelection.selectedValues"
-      active="currentCommunity"></vs-map>
+      active="activeCommunities"></vs-map>
 
-    <vs-histogram property="{{var}}"></vs-histogram>
+    <vs-histogram property="{{var}}"
+      hover="showCommunities"
+      click="selectCommunities"
+      selected="communitySelection.selectedValues"
+      active="activeCommunities"></vs-histogram>
 
     <section class="source">
       <button role="button" class="show-source" ng-click="showSource = !showSource;">

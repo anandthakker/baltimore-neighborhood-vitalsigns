@@ -1,7 +1,6 @@
 .value{
   background: #555;
   color: #fff;
-  display: block;
   width: 50px;
   //margin: 0 auto;
   text-align: center;
@@ -10,8 +9,8 @@
   z-index: 10000;
   border-radius: 3px;
   position: absolute;
-  left: 35px;
-  margin-top: -65px;
+  left: 25px;
+  bottom: 180px;
 }
 
 .vs-map {
@@ -57,17 +56,35 @@
   stroke-linejoin: round;
 }
 
+.bar rect {
+  shape-rendering: crispEdges;
+  stroke: #777;
+  stroke-dasharray: 2,2;
+  stroke-linejoin: round;
+}
+
+.bar text {
+  fill: #fff;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  stroke-weight: 1px;
+  shape-rendering: crispEdges;
+}
+
+
 // Regions that have been selected.
-.region.selected {
+.selected, rect.selected {
   stroke: orange;
   stroke-width: 2px;
 }
 
 // The region being hovered.
-.region.active{
+.active, rect.active {
   stroke: red;
 }
-
 
 .q0-9 { fill:rgb(247,251,255); }
 .q1-9 { fill:rgb(222,235,247); }
