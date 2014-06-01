@@ -40,8 +40,8 @@ angular.module('vitalsigns')
           return @_click
 
       # parse numerical data from strings
-      # TODO: handle dollar signs, commas, etc.
       parseValue: (val)->
+        val = (val ? "").replace /[$,]/, ""
         parseFloat(val)
 
       ###
@@ -88,7 +88,10 @@ angular.module('vitalsigns')
           .attr("d", @path)
           .attr("data-region", (d)->d.id)
           .attr("class", (d)=>
-            "region " + quantize(@value(d))
+            q = quantize(@value(d))
+            console.log d
+            console.log q
+            "region " + q)
           ).on "mouseover", (d, i)=>@_mouseover(d,i)
           .on "mouseout", (d,i)=>@_mouseout(d,i)
           .on "click", (d,i)=>@_click(d,i)
