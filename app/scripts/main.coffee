@@ -10,8 +10,14 @@ angular.module 'vitalsigns', ['ui.router']
         templateUrl: "partials/main.tpl.html"
         controller: "main"
         resolve:
-          indicatorSelection: ($stateParams, Selection)->
+          indicatorSelection: ($location, $rootScope, $stateParams, Selection)->
             selection = new Selection($stateParams.indicators)
+            selection.onChange = ()->
+              $rootScope.skipStateChange = true
+              current = $location.path()
+              $location.path(current.replace /\/i\/.*\//, "/i/#{@toString()}/")
+            selection
+
           dataset: "vsData"
 
       .state 'main.multiples',
@@ -27,9 +33,21 @@ angular.module 'vitalsigns', ['ui.router']
 
     $urlRouterProvider.otherwise "/i//"
 
+    #allows us to prevent url changes from firing state transitions
+    # (see run())
+    $urlRouterProvider.deferIntercept()
 
-  .run ($rootScope) ->
+
+  .run ($rootScope, $urlRouter) ->
     $rootScope._ = _
+
+    $rootScope.$on '$locationChangeSuccess', (e) ->
+      if $rootScope.skipStateChange
+        $rootScope.skipStateChange = false
+        e.preventDefault()
+
+    #Configures $urlRouter's listener *after* your custom listener
+    $urlRouter.listen();
 
   .controller 'main', ($scope, dataset, indicatorSelection, $location, $state, $stateParams)->
     $scope.vitalsigns = dataset.vitalsigns
@@ -43,9 +61,6 @@ angular.module 'vitalsigns', ['ui.router']
     .value()
 
     $scope.selection = indicatorSelection
-    indicatorSelection.onChange = ()->
-      current = $location.path()
-      $location.path(current.replace /\/i\/.*\//, "/i/#{@toString()}/")
 
 
     $scope.selectCommunity = (cid, indicator) ->
@@ -55,13 +70,13 @@ angular.module 'vitalsigns', ['ui.router']
     $scope.moveLeft = (v)->
       i = _.indexOf($scope.selection.selectedValues, v)
       tmp = $scope.selection.selectedValues[i]
-      $scope.selection.selectedValues[i]=$scope.selection.selectedValues[i-1]
-      $scope.selection.selectedValues[i-1] = tmp
-      $state.go('main.multiples',{indicators: $scope.selection.toString()})
+      indicatorSelection.selectedValues[i]=$scope.selection.selectedValues[i-1]
+      indicatorSelection.selectedValues[i-1] = tmp
+      indicatorSelection.onChange()
 
     $scope.moveRight = (v)->
       i = _.indexOf($scope.selection.selectedValues, v)
       tmp = $scope.selection.selectedValues[i]
-      $scope.selection.selectedValues[i]=$scope.selection.selectedValues[i+1]
-      $scope.selection.selectedValues[i+1] = tmp
-      $state.go('main.multiples',{indicators: $scope.selection.toString()})
+      indicatorSelection.selectedValues[i]=$scope.selection.selectedValues[i+1]
+      indicatorSelection.selectedValues[i+1] = tmp
+      indicatorSelection.onChange()

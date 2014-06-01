@@ -8,7 +8,7 @@
     "topojson": "~1.6.13",
     "angular": "~1.2.16",
     "lodash": "~2.4.1",
-    "angular-ui-router": "~0.2.10"
+    "angular-ui-router": "git@github.com:anandthakker/ui-router.git#~0.2.99"
   },
   "devDependencies": {}
 }
