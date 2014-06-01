@@ -10,7 +10,7 @@ angular.module 'vitalsigns', ['ui.router']
         templateUrl: "partials/main.tpl.html"
         controller: "main"
         resolve:
-          indicatorSelection: ($location, $rootScope, $stateParams, Selection)->
+          indicatorSelection: ["$location", "$rootScope", "$stateParams", "Selection",($location, $rootScope, $stateParams, Selection)->
             selection = new Selection($stateParams.indicators)
             selection.onChange = ()->
               $rootScope.skipStateChange = true
@@ -18,8 +18,9 @@ angular.module 'vitalsigns', ['ui.router']
               updated = current.replace /\/i\/[^\/]*\//, "/i/#{@toString()}/"
               $location.path(updated)
             selection
+          ]
 
-          communitySelection: ($location, $rootScope, $stateParams, Selection)->
+          communitySelection: ["$location", "$rootScope", "$stateParams", "Selection",($location, $rootScope, $stateParams, Selection)->
             esc = (s)->
               s.replace /-/g, "-~"
                 .replace /\//g, "--"
@@ -36,6 +37,7 @@ angular.module 'vitalsigns', ['ui.router']
               updated = current.replace /\/c\/[^\/]*\//, "/c/#{esc(@toString())}/"
               $location.path(updated)
             selection
+          ]
 
           dataset: "vsData"
 
