@@ -11,7 +11,9 @@
 
     <h2>{{varInfo.get(var).Indicator}} - {{varInfo.get(var).Year}}</h2>
 
-    <vs-map property="{{var}}" hover="selectCommunity"></vs-map>
+    <vs-map property="{{var}}" hover="showCommunity" click="selectCommunity"
+      selected="communitySelection.selectedValues"
+      active="currentCommunity"></vs-map>
 
     <section class="source">
       <button role="button" class="show-source" ng-click="showSource = !showSource;">

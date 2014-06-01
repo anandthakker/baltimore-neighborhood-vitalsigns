@@ -2,14 +2,11 @@ angular.module('vitalsigns')
   .factory 'Selection', ()->
     class Selection
       constructor: (initString, delim)->
+        @selectedValues = []
         @parse(initString, delim)
-
-      selectedValues: []
 
       parse: (str, delim)=>
         if str?.trim?().length > 0
-          console.log "parsing selection"
-          console.log str
           @selectedValues = str.split(delim ? ":")
       toString: (delim)=>
         (@selectedValues ? []).join(delim ? ":")

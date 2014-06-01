@@ -32,6 +32,13 @@ angular.module('vitalsigns')
         else
           [@_mouseover, @_mouseout]
 
+      _click: (d, i) ->
+      click: (_) =>
+        if _?
+          @_click = _
+        else
+          return @_click
+
       # parse numerical data from strings
       # TODO: handle dollar signs, commas, etc.
       parseValue: (val)->
@@ -81,9 +88,10 @@ angular.module('vitalsigns')
           .attr("d", @path)
           .attr("data-region", (d)->d.id)
           .attr("class", (d)=>
-            quantize(@value(d))
+            "region " + quantize(@value(d))
           ).on "mouseover", (d, i)=>@_mouseover(d,i)
           .on "mouseout", (d,i)=>@_mouseout(d,i)
+          .on "click", (d,i)=>@_click(d,i)
 
         @svg.append("path")
           .datum(topojson.mesh(@topojsonData, feature))
@@ -97,6 +105,9 @@ angular.module('vitalsigns')
     replace: true
     scope:
       hover: "="
+      click: "="
+      selected: "="
+      active: "="
 
     link: (scope, element, attr)->
 
@@ -112,6 +123,23 @@ angular.module('vitalsigns')
               scope.hover(d.id, prop)
             (d)->
           ]
+
+          vsMap.click (d)->
+            scope.$apply ()->
+              scope.click(d.id)
+
+          scope.$watch "active", (newval)->
+            return unless newval?
+            d3.select(svgNode).selectAll(".region")
+              .classed "active", (d)-> d.id is scope.active
+
+          scope.$watch "selected", (newval)->
+            return unless newval?
+            console.log newval
+            d3.select(svgNode).selectAll(".region")
+              .classed "selected", (d)->
+                _.contains(scope.selected, d.id)
+          , true
 
   .factory 'Histogram', (vsData)->
     ###

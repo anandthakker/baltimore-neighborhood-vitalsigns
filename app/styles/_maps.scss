@@ -47,7 +47,7 @@
 
 .region {
   fill: #fff;
-  stroke: #000;
+  stroke: none;
 }
 
 .region-boundary {
@@ -57,14 +57,17 @@
   stroke-linejoin: round;
 }
 
-.region:hover{
-  stroke: red;
-  stroke-width: 4px;
+// Regions that have been selected.
+.region.selected {
+  stroke: orange;
+  stroke-width: 2px;
 }
 
-path[data-region]:hover {
+// The region being hovered.
+.region.active{
   stroke: red;
 }
+
 
 .q0-9 { fill:rgb(247,251,255); }
 .q1-9 { fill:rgb(222,235,247); }

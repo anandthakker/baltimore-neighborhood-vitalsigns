@@ -5,7 +5,7 @@ angular.module 'vitalsigns', ['ui.router']
 
     $stateProvider
       .state 'main',
-        url: "/i/:indicators"
+        url: "/i/:indicators/c/:communities"
         abstract: true
         templateUrl: "partials/main.tpl.html"
         controller: "main"
@@ -15,7 +15,26 @@ angular.module 'vitalsigns', ['ui.router']
             selection.onChange = ()->
               $rootScope.skipStateChange = true
               current = $location.path()
-              $location.path(current.replace /\/i\/.*\//, "/i/#{@toString()}/")
+              updated = current.replace /\/i\/[^\/]*\//, "/i/#{@toString()}/"
+              $location.path(updated)
+            selection
+
+          communitySelection: ($location, $rootScope, $stateParams, Selection)->
+            esc = (s)->
+              s.replace /-/g, "-~"
+                .replace /\//g, "--"
+                .replace /\s/g, "-_"
+            unesc = (s)->
+              s.replace /-_/g, " "
+                .replace /--/g, "/"
+                .replace /-~/g, "-"
+
+            selection = new Selection(unesc($stateParams.communities))
+            selection.onChange = ()->
+              $rootScope.skipStateChange = true
+              current = $location.path()
+              updated = current.replace /\/c\/[^\/]*\//, "/c/#{esc(@toString())}/"
+              $location.path(updated)
             selection
 
           dataset: "vsData"
@@ -31,7 +50,7 @@ angular.module 'vitalsigns', ['ui.router']
             # templateUrl: "partials/comments.tpl.html"
             template: ""
 
-    $urlRouterProvider.otherwise "/i//"
+    $urlRouterProvider.otherwise "/i//c//"
 
     #allows us to prevent url changes from firing state transitions
     # (see run())
@@ -49,7 +68,7 @@ angular.module 'vitalsigns', ['ui.router']
     #Configures $urlRouter's listener *after* your custom listener
     $urlRouter.listen();
 
-  .controller 'main', ($scope, dataset, indicatorSelection, $location, $state, $stateParams)->
+  .controller 'main', ($scope, dataset, indicatorSelection, communitySelection, $location, $state, $stateParams)->
     $scope.vitalsigns = dataset.vitalsigns
     $scope.varInfo = dataset.varInfo
 
@@ -61,9 +80,12 @@ angular.module 'vitalsigns', ['ui.router']
     .value()
 
     $scope.selection = indicatorSelection
+    $scope.communitySelection = communitySelection
 
+    $scope.selectCommunity = (cid)->
+      $scope.communitySelection.toggle(cid)
 
-    $scope.selectCommunity = (cid, indicator) ->
+    $scope.showCommunity = (cid, indicator) ->
       $scope.currentCommunity = cid
       $scope.currentIndicator = indicator
 
