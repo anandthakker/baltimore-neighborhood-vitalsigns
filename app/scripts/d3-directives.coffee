@@ -215,9 +215,9 @@ angular.module('vitalsigns')
         @g.append("g")
           .attr("class", "y-axis axis")
         @g.append("text")
-          .attr("class", "x-axis-label")
+          .attr("class", "x-axis-label axis-label")
         @g.append("text")
-          .attr("class", "y-axis-label")
+          .attr("class", "y-axis-label axis-label")
 
 
       width: 400
@@ -257,8 +257,8 @@ angular.module('vitalsigns')
       redraw: () =>
         margin =
           top: 5
-          right: 10
-          bottom: 25
+          right: 5
+          bottom: 50
           left: 50
 
         w = @width - margin.left - margin.right
@@ -314,15 +314,20 @@ angular.module('vitalsigns')
           .text((d)=>@label(d))
 
         @g.select(".x-axis")
-          .attr("transform", "translate(0,#{h})")
+          .attr("transform", "translate(0,#{h+margin.bottom-30})")
           .call(xAxis)
         @g.select(".y-axis")
           .call(yAxis)
 
         @g.select(".x-axis-label")
           .text(@xLabel)
+          .attr("x", w/2)
+          .attr("y", h + margin.bottom - 1)
+          .attr("text-anchor", "middle")
         @g.select(".y-axis-label")
           .text(@yLabel)
+          .attr("transform", "rotate(-90) translate(#{-h/2}, #{- margin.left + 10})")
+          .attr("text-anchor", "middle")
 
 
 
@@ -474,8 +479,11 @@ angular.module('vitalsigns')
           scatter.xDomain = ()->calculateExtent(dataset, x)
           scatter.yDomain = ()->calculateExtent(dataset, y)
 
-          scatter.xLabel = dataset.varInfo.get(x)["Variable Name"]
-          scatter.yLabel = dataset.varInfo.get(y)["Variable Name"]
+          label = (ind)->
+            varInfo = dataset.varInfo.get(ind)
+            varInfo["Indicator"] + "(#{varInfo['Year']})"
+          scatter.xLabel = label(x)
+          scatter.yLabel = label(y)
 
           scatter.label = (d)->d
 
