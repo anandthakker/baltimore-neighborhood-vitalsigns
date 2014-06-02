@@ -469,7 +469,7 @@ angular.module('vitalsigns')
             scope.click(d)
 
         scope.$watch 'indicators', (newval)->
-          return unless newval?
+          return unless newval?.length is 2
           [x,y] = scope.indicators
 
           scatter.xValue = (d)->

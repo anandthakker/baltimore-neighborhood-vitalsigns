@@ -8,6 +8,7 @@ angular.module 'vitalsigns', ['ui.router']
         url: "/i/:indicators/c/:communities"
         abstract: true
         templateUrl: "partials/main.tpl.html"
+        controller: "main"
         resolve:
           indicatorSelection: ["$location", "$rootScope", "$stateParams", "Selection",($location, $rootScope, $stateParams, Selection)->
             selection = new Selection($stateParams.indicators)
@@ -71,6 +72,11 @@ angular.module 'vitalsigns', ['ui.router']
 
     #Configures $urlRouter's listener *after* your custom listener
     $urlRouter.listen();
+
+
+  .controller "main", ($scope)->
+    $scope.controlsActive = true
+    $scope.toggleControls = ()-> $scope.controlsActive = !$scope.controlsActive
 
   .controller "controls", ($scope, dataset, indicatorSelection)->
     $scope.varInfo = dataset.varInfo

@@ -18,6 +18,7 @@ body, select, input, textarea {
   color: $font-color;
   font-family: $font-family-sans;
   line-height: $line-height;
+  margin: 0;
 }
 
 body {
@@ -41,7 +42,8 @@ ul {
 
 
 button {
-  border: 0;
+  border: 1px solid gray;
+  border-radius: 3px;
   background: none;
   outline: 0;
   cursor: pointer;
@@ -74,13 +76,7 @@ h1 { font-size: scale-to(2); }
 h2 { font-size: scale-to(1); }
 p  { @include scale-type(scale-to(0), 1, 0); }
 
-h4+p { margin-top: 0; }
-
 small { font-size: scale-to(-1); }
-
-@media only screen and (min-width: 35em) {
-  h1 { font-size: scale-to(3);  }
-}
 
 .browsehappy {
     margin: 0.2em 0;
@@ -92,22 +88,143 @@ small { font-size: scale-to(-1); }
 
 /*----------------------------------------------------------------------*/
 
-
-.container {
-  background-position: 0 1.25em;
-  background-origin: content-box;
-
-  padding: 0 .5em 0 .5em;
-
-  @extend %uncollapse-margin;
+%full-height {
+    position: fixed;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    top: 0;
+    bottom: 0;
 }
 
 
+$fixed-header-offset: lines(5);
+$main-column-width: 66%;
+$gutter-width: 2%;
 
-footer.container {
+$page-margin: .5em;
+
+.page-header {
+  @extend %uncollapse-margin;
+  padding: 0 $page-margin;
+
+  position: fixed;
+  @include z(header);
+  top: 0;
+  left: 0;
+  right: 0;
+
+  @media only screen and (min-width: 769px) {
+    width: $main-column-width;
+  }
+
+  background: white;
+}
+
+main[role="main"] {
+  @extend %full-height;
+  padding-top: $fixed-header-offset;
+  padding-left: $page-margin;
+  padding-right: $page-margin;
+  @media only screen and (min-width: 769px) {
+      width: $main-column-width;
+  }
+}
+
+
+.visualizations {
+  min-height: 10em;
+  padding-top: 20px;
+  padding-left: $page-margin;
+  padding-right: $page-margin;
+  position: relative;
+  @include z(main);
+}
+
+
+$controls-bg: rgb(240,240,240);
+.controls-trigger {
+  position: absolute;
+  right: $page-margin;
+  bottom: lines(1);
+  @media only screen and (min-width: 769px) { display: none; }
+}
+
+.controls-close {
+  font-size: scale-to(1);
+  position: absolute;
+  right: $page-margin;
+  @media only screen and (min-width: 769px) { display: none; }
+}
+
+.controls {
+  font-size: scale-to(-1);
+  background:  $controls-bg;
+  padding: $fixed-header-offset .5em 0 .5em;
+  width: 100%;
+  @media only screen and (min-width: 769px) {
+    padding-top: 0;
+    width: (100% - $main-column-width - $gutter-width);
+  }
+
+  @include z(navigation);
+  @extend %full-height;
+
+
+  /* off-canvas + transition */
+  right: 0;
+  transition: right .5s;
+  -webkit-transition: right .5s;
+  &.hidden {
+    right: -100%;
+  }
+
+
+  /* indicator list styles */
+  ul li ul li{
+    padding-bottom:4px;
+    padding-top: 4px;
+    line-height: 1.2;
+    user-select: none;
+  }
+  ul{margin-top: 0px;}
+
+  li {
+    cursor: pointer;
+    h2{
+      border-bottom: 1px solid #ccc;
+      color: #444;
+      margin-bottom: 8px;
+      padding-bottom: 2px;
+    }
+
+    /* selection & hover */
+    h2:hover+ul, li:hover {
+      background-color: #ddd;
+    }
+    &.selected, li.selected:hover {
+      background-color: $selection-color;
+      color: #FFF;
+    }
+  }
+}
+
+
+.control-ui{
+  input.search{
+      width: 100%;
+      padding: 7px 10px ;
+      margin-top: 20px;
+      font-size: scale-to(1);
+      display: none; /* hide for now */
+    }
+}
+
+
+footer {
+  font-size: scale-to(-1);
   clear: both;
   background: white;
-  padding: 3em 0 2em 2em;
+  padding: 3em 0 2em 0;
   @extend %clearfix;
 }
 
@@ -125,125 +242,5 @@ footer.container {
         padding: 0 .25em;
       }
     }
-  }
-}
-
-
-/*----------------------------------------------------------------------*/
-
-.welcome, h3, header h1 {
-  margin: .25em;
-}
-
-$controls-bg: rgba(200,200,200,.2);
-
-.maps {
-  min-height: 10em;
-  padding-top: 20px;
-}
-
-$offset: 0rem;
-
-.hide-btn {
-  position: fixed;
-  right: 0;
-  top: $offset;
-  font-size: scale-to(1);
-  z-index: 100;
-  background-color: $controls-bg;
-}
-
-.controls {
-  font-size: scale-to(-1);
-  background:  $controls-bg;
-  padding: 0 2em;
-  width: 100%;
-  position: fixed;
-  top: $offset;
-  bottom: 0;
-  left: 0;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  transition: left .5s;
-  -webkit-transition: left .5s;
-  &.hidden {
-    left: 100%;
-  }
-  ul li ul li{
-    padding-bottom:4px;
-    padding-top: 4px;
-    line-height: 1.2;
-    user-select: none;
-  }
-  ul{margin-top: 0px;}
-
-  /* selection */
-  li {
-    cursor: pointer;
-    h2{
-      border-bottom: 1px solid #ccc;
-      color: #444;
-      margin-bottom: 8px;
-      padding-bottom: 2px;
-    }
-    h2:hover+ul, li:hover {
-      background-color: #ddd;
-    }
-    &.selected, li.selected:hover {
-      background-color: $selection-color;
-      color: #FFF;
-    }
-
-  }
-
-}
-
-.control-ui{
-  input.search{
-      width: 100%;
-      padding: 7px 10px ;
-      margin-top: 20px;
-      font-size: scale-to(1);
-    }
-}
-
-.community-info{
-  position: fixed;
-  top: 0;
-  width: 70%;
-  left: 0;
-  background-color: $selection-color;
-  color: #FFF;
-  padding: 2px 10px;
-  z-index: 10000;
-  h2{
-    margin-bottom: 13px;
-    margin-top: 13px;
-  }
-}
-
-@media only screen and (min-width: 769px) {
-
-  .welcome, h3, header h1 {
-    margin-bottom: lines(1);
-  }
-  .controls{
-    left: inherit;
-    top: 0;
-    right: 0;
-    width: 30%;
-    transition: all .5s;
-    &.hidden {
-      left: 100%;
-    }
-    .hide-btn{
-      display:none;
-    }
-  }
-
-  .maps, .disqus {
-    width: 66%;
-    position: relative;
-    //margin-right: 3%;
   }
 }

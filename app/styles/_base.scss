@@ -20,6 +20,20 @@ $font-family-sans: "Source Sans Pro", "Helvetica", sans-serif;
 $font-family-serif: "Georgia", serif;
 $font-family-display: "Helvetica", sans-serif;
 
+/*
+z-index layers
+*/
+$zindex: (
+    message: 9000,
+    header: 8000,
+    navigation: 7000,
+    main: 6000,
+    basement: 5000
+);
+@mixin z($level) {
+    z-index: map-get($zindex, $level);
+}
+
 
 /* ==========================================================================
    H5BP Helper classes
@@ -232,10 +246,6 @@ $min-line-padding: .1em;
 }
 
 
-
-//-----------------------------------
-// Variables
-//-----------------------------------
 
 /*
 http://www.paulirish.com/2012/box-sizing-border-box-ftw/

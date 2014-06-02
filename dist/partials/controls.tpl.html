@@ -1,13 +1,13 @@
-<section class="controls">
+<section class="controls" ng-class="{hidden: !controlsActive}">
   <div class="control-ui">
     <input type="text" class="search" placeholder="Search Available Data"/>
     <button role="button" ng-click="clear()">Clear Selection</button>
+    <button class="controls-close" ng-click="toggleControls();">
+      X
+    </button>
   </div>
-  <button class="hide-btn" ng-click="controlsActive = !controlsActive;" ng-init="controlsActive=true;">
-    {{ controlsActive ? "X" : "« Indicators "}}
-  </button>
 
-  <ul ng-class="{hidden: !controlsActive}">
+  <ul>
     <li ng-repeat="(section, variables) in indicators">
       <h2 ng-click="select(variables)">{{section}}</h2>
       <ul ng-mouseup="endDragSelect()"
