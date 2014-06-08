@@ -23,6 +23,7 @@ $font-family-display: "Helvetica", sans-serif;
 /*
 z-index layers
 */
+/*
 $zindex: (
     message: 9000,
     header: 8000,
@@ -32,7 +33,7 @@ $zindex: (
 );
 @mixin z($level) {
     z-index: map-get($zindex, $level);
-}
+}*/
 
 
 /* ==========================================================================
