@@ -47,6 +47,9 @@ button {
   background: none;
   outline: 0;
   cursor: pointer;
+  &.show-source{
+    border: none;
+  }
 
 }
 
