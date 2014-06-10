@@ -113,12 +113,16 @@ $page-margin: .5em;
 
   position: fixed;
   //@include z(header);
+  z-index: $z-header;
   top: 0;
   left: 0;
   right: 0;
 
+  height: $fixed-header-offset;
+
   @media only screen and (min-width: 769px) {
     width: $main-column-width;
+    height: auto;
   }
 
   background: white;
@@ -142,6 +146,7 @@ main[role="main"] {
   padding-right: $page-margin;
   position: relative;
   //@include z(main);
+  z-index: $z-main
 }
 
 
@@ -163,15 +168,17 @@ $controls-bg: rgb(240,240,240);
 .controls {
   font-size: scale-to(-1);
   background:  $controls-bg;
-  padding: 50px 0px 0px 0px;
+  padding: ($fixed-header-offset + lines(2)) 0px 0px 0px;
   width: 100%;
   @media only screen and (min-width: 769px) {
     width: (100% - $main-column-width - $gutter-width);
+    padding-top: 50px;
   }
 
   //@include z(navigation);
-  @extend %full-height;
+  z-index: $z-navigation;
 
+  @extend %full-height;
 
   /* off-canvas + transition */
   right: 0;
@@ -182,7 +189,7 @@ $controls-bg: rgb(240,240,240);
   }
 
 
-  /* indicator list styles */
+  /* indicator list */
   ul{
     margin-top: 0px;
     padding-left: 20px;
@@ -222,10 +229,16 @@ $controls-bg: rgb(240,240,240);
   display: block;
   width: 100%;
   opacity: 0.5;
+
   position: fixed;
-  padding: 10px;
-  top: 0;
+  top: $fixed-header-offset;
   height: 54px;
+
+  @media only screen and (min-width: 769px) {
+    top: 0;
+  }
+
+  padding: 10px;
   &:hover{
     opacity: .9;
   }

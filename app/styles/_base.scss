@@ -35,6 +35,11 @@ $zindex: (
     z-index: map-get($zindex, $level);
 }*/
 
+$z-message: 9000;
+$z-header: 8000;
+$z-navigation: 7000;
+$z-main: 6000;
+
 
 /* ==========================================================================
    H5BP Helper classes
